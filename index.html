@@ -2,11 +2,202 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="noindex,nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Keep this so search engines don’t index while you test -->
+  <meta name="robots" content="noindex,nofollow">
   <title>One-Board Pilot</title>
+  <meta name="description" content="A tiny, single-file site to run the One-Board routine (weekly wins + one action). No PHI." />
+  <style>
+    :root{
+      --bg:#0f172a;          /* slate-900 */
+      --card:#111827;        /* gray-900 */
+      --ink:#e5e7eb;         /* gray-200 */
+      --muted:#94a3b8;       /* slate-400 */
+      --accent:#22c55e;      /* green-500 */
+      --accent-2:#60a5fa;    /* blue-400 */
+      --warn:#f97316;        /* orange-500 */
+      --danger:#ef4444;      /* red-500 */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+    h1{font-size:20px;margin:0;font-weight:700;letter-spacing:0.3px}
+    h2.kicker{margin:0 0 8px 0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+    .card{background:linear-gradient(180deg,#0b1225 0%,#0a0f1f 100%);border:1px solid #1f2937;border-radius:16px;padding:16px}
+    .grid{display:grid;gap:12px}
+    @media(min-width:900px){
+      .grid-cols{grid-template-columns:2fr 1fr}
+      .grid-low{grid-template-columns:2fr 1fr}
+    }
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input[type="text"], input[type="date"], textarea{width:100%;border:1px solid #1f2937;border-radius:10px;background:#0b1225;color:var(--ink);padding:10px 12px}
+    textarea{min-height:64px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #1f2937;background:#0b1225;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn:hover{border-color:#334155}
+    .btn.good{background:#052e1a;border-color:#064e3b}
+    .btn.ghost{background:transparent}
+    .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;border:1px solid #1f2937;border-radius:999px;padding:6px 10px;color:var(--muted)}
+    .stack{display:flex;flex-wrap:wrap;gap:8px}
+    .muted{color:var(--muted)}
+    .wins li{margin:6px 0}
+    footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
+  </style>
 </head>
 <body>
-  <p>Site is up — now replace this with your full One-Board code.</p>
+  <div class="wrap">
+    <header>
+      <h1>One-Board Pilot</h1>
+      <div class="stack">
+        <span class="pill">Week of <input id="weekOf" type="date" aria-label="Week Of" /></span>
+        <button class="btn" id="copyBtn" title="Copy a ready-to-paste weekly update">Copy Weekly Update</button>
+        <button class="btn ghost" id="resetBtn" title="Clear everything for a fresh week">Reset Week</button>
+      </div>
+    </header>
+
+    <div class="grid grid-cols">
+      <!-- Left column -->
+      <section class="card">
+        <h2 class="kicker">Signals — (3 short lines max)</h2>
+        <div class="row">
+          <div>
+            <label for="signal1">Communication</label>
+            <input id="signal1" type="text" placeholder="e.g., Morning update late; add 8:30a post" />
+          </div>
+          <div>
+            <label for="signal2">Workload</label>
+            <input id="signal2" type="text" placeholder="e.g., Add-ons spike 15:00–16:00" />
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <label for="signal3">Teamwork</label>
+          <input id="signal3" type="text" placeholder="e.g., 2-min handoff reduced misses" />
+        </div>
+      </section>
+
+      <!-- Right column -->
+      <section class="card">
+        <h2 class="kicker">This Week’s One Action</h2>
+        <label for="oneAction">We’re trying</label>
+        <input id="oneAction" type="text" placeholder="e.g., Post a daily 8:30a one-pager in #ops-updates" />
+        <div class="row" style="margin-top:10px">
+          <div>
+            <label for="owner">Owner</label>
+            <input id="owner" type="text" placeholder="e.g., Dana" />
+          </div>
+          <div>
+            <label for="start">Starts</label>
+            <input id="start" type="date" />
+          </div>
+        </div>
+        <div class="stack" style="margin-top:10px">
+          <button class="btn good" id="proofBtn">Mark Proof Done (stamps date)</button>
+          <span id="proofStamp" class="muted"></span>
+        </div>
+      </section>
+    </div>
+
+    <div class="grid grid-low" style="margin-top:12px">
+      <section class="card">
+        <h2 class="kicker">Weekly Wins (3–5 bullets, Behavior → Impact)</h2>
+        <ol class="wins" style="padding-left:18px">
+          <li><input id="win1" type="text" placeholder="@Name — covered US add-on at 15:10 → cleared backlog before shift change." /></li>
+          <li><input id="win2" type="text" placeholder="@Name — labeled Probe #3 and stocked gel → first-use ready." /></li>
+          <li><input id="win3" type="text" placeholder="@Name — posted 2-min handoff notes → fewer callbacks from ED." /></li>
+          <li><input id="win4" type="text" placeholder="(optional)" /></li>
+          <li><input id="win5" type="text" placeholder="(optional)" /></li>
+        </ol>
+      </section>
+
+      <section class="card">
+        <h2 class="kicker">Snapshot Notes</h2>
+        <label for="topPlus">Top +1 (what improved)</label>
+        <input id="topPlus" type="text" placeholder="e.g., Teamwork rose after 2-min handoff" />
+        <label for="topMinus" style="margin-top:10px;display:block">Top −1 (focus area)</label>
+        <input id="topMinus" type="text" placeholder="e.g., Communication: morning update timing" />
+        <label for="notes" style="margin-top:10px;display:block">Notes (optional)</label>
+        <textarea id="notes" placeholder="Any quick context for leaders or the team"></textarea>
+      </section>
+    </div>
+
+    <footer>
+      Privacy: share only aggregate results; never report subgroups with N&lt;5. No PHI in wins.
+    </footer>
+  </div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const ids = [
+    'weekOf','signal1','signal2','signal3','oneAction','owner','start',
+    'win1','win2','win3','win4','win5','topPlus','topMinus','notes'
+  ];
+  const KEY = 'one-board-pilot-v1';
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      ids.forEach(id=>{ if(data[id]!==undefined) $(id).value = data[id]; });
+      if(data.proofStamp){ $('proofStamp').textContent = 'Proof: ' + data.proofStamp; }
+    }catch(e){ console.warn('Load failed', e); }
+  }
+  function save(){
+    const data = {};
+    ids.forEach(id=> data[id] = $(id).value.trim());
+    data.proofStamp = $('proofStamp').textContent || '';
+    try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ console.warn('Save failed', e); }
+  }
+  function resetWeek(){
+    if(!confirm('Clear all fields for a fresh week?')) return;
+    ids.forEach(id=> $(id).value = '');
+    $('proofStamp').textContent='';
+    save();
+  }
+  function stampProof(){
+    const now = new Date();
+    const stamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    $('proofStamp').textContent = 'DONE — ' + stamp;
+    save();
+  }
+  function copyWeekly(){
+    const week = $('weekOf').value || '(set week)';
+    const tp = $('topPlus').value; const tm = $('topMinus').value;
+    const act = $('oneAction').value; const owner = $('owner').value; const start = $('start').value;
+    const wins = [1,2,3,4,5].map(n => $('win'+n).value).filter(Boolean).slice(0,5);
+
+    const lines = [];
+    lines.push(`Weekly Pulse Snapshot — Week of ${week}`);
+    if(tp) lines.push(`Top +1: ${tp}`);
+    if(tm) lines.push(`Top −1: ${tm}`);
+    if(act){
+      lines.push(`One action (this week): ${act}` + (owner?` (owner: ${owner}`:'') + (start?`, starts: ${start}`:'') + (owner||start?')':''));
+    }
+    if(wins.length){
+      lines.push('');
+      lines.push('Weekly Wins');
+      wins.forEach(w=> lines.push(`• ${w}`));
+    }
+    const txt = lines.join('\n');
+    navigator.clipboard.writeText(txt).then(()=>{
+      $('copyBtn').textContent = 'Copied!';
+      setTimeout(()=> $('copyBtn').textContent = 'Copy Weekly Update', 1400);
+    }).catch(()=>{
+      alert('Copy failed — your browser may block clipboard writes. You can still select & copy manually.');
+    });
+  }
+
+  ids.forEach(id => $(id).addEventListener('input', save));
+  $('proofBtn').addEventListener('click', stampProof);
+  $('resetBtn').addEventListener('click', resetWeek);
+  $('copyBtn').addEventListener('click', copyWeekly);
+
+  load();
+})();
+</script>
 </body>
 </html>
+
