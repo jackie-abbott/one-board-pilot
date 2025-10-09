@@ -3,99 +3,43 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Keep the site out of search results while you test -->
-  <meta name="robots" content="noindex,nofollow" />
+  <!-- Keep this so search engines don’t index while you test -->
+  <meta name="robots" content="noindex,nofollow">
   <title>One-Board Pilot</title>
   <meta name="description" content="A tiny, single-file site to run the One-Board routine (weekly wins + one action). No PHI." />
   <style>
-    /* ===== Median Method – light palette ===== */
     :root{
-      --bg:#f7faf9;          /* soft light background */
-      --card:#ffffff;        /* white cards */
-      --ink:#0f2d3a;         /* deep blue-teal text */
-      --muted:#6b7f92;       /* cool slate */
-      --accent:#2bb3b1;      /* teal (primary) */
-      --accent-2:#2a91b1;    /* blue-teal (secondary) */
-      --warn:#f59e0b;        /* amber */
-      --danger:#dc2626;      /* red */
-      --border:#e6edf3;      /* light border */
-      --border-strong:#d8e3ea;
+      --bg:#0f172a;          /* slate-900 */
+      --card:#111827;        /* gray-900 */
+      --ink:#e5e7eb;         /* gray-200 */
+      --muted:#94a3b8;       /* slate-400 */
+      --accent:#22c55e;      /* green-500 */
+      --accent-2:#60a5fa;    /* blue-400 */
+      --warn:#f97316;        /* orange-500 */
+      --danger:#ef4444;      /* red-500 */
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--ink);
-      font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    }
-
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif}
     .wrap{max-width:1100px;margin:0 auto;padding:16px}
     header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
-    h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.3px}
-
+    h1{font-size:20px;margin:0;font-weight:700;letter-spacing:0.3px}
+    h2.kicker{margin:0 0 8px 0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+    .card{background:linear-gradient(180deg,#0b1225 0%,#0a0f1f 100%);border:1px solid #1f2937;border-radius:16px;padding:16px}
     .grid{display:grid;gap:12px}
     @media(min-width:900px){
       .grid-cols{grid-template-columns:2fr 1fr}
       .grid-low{grid-template-columns:2fr 1fr}
     }
-
-    .card{
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:16px;
-      box-shadow:0 1px 2px rgba(15,45,58,.06);
-    }
-
-    h2.kicker{
-      margin:0 0 8px 0;
-      font-size:12px;
-      color:var(--muted);
-      text-transform:uppercase;
-      letter-spacing:.08em
-    }
-
     label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-
-    input[type="text"], input[type="date"], textarea{
-      width:100%;
-      border:1px solid var(--border-strong);
-      border-radius:10px;
-      background:#fff;
-      color:var(--ink);
-      padding:10px 12px
-    }
-    input[type="text"]:focus, input[type="date"]:focus, textarea:focus{
-      outline:none;
-      border-color:var(--accent);
-      box-shadow:0 0 0 2px rgba(43,179,177,.15)
-    }
+    input[type="text"], input[type="date"], textarea{width:100%;border:1px solid #1f2937;border-radius:10px;background:#0b1225;color:var(--ink);padding:10px 12px}
     textarea{min-height:64px;resize:vertical}
-
     .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-    .btn{
-      display:inline-flex;align-items:center;gap:8px;
-      border:1px solid var(--border-strong);
-      background:#fff;color:var(--ink);
-      padding:10px 14px;border-radius:10px;cursor:pointer
-    }
-    .btn:hover{border-color:#b9ccd8}
-    /* Accessible teal for white text */
-    .btn.good{
-      background:linear-gradient(180deg,#14726c,#1f7f78);
-      border-color:#1f7f78;
-      color:#fff
-    }
-    .btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
-    .pill{
-      display:inline-flex;align-items:center;gap:6px;
-      font-size:12px;border:1px solid var(--border);
-      border-radius:999px;padding:6px 10px;
-      color:var(--muted);background:#fff
-    }
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #1f2937;background:#0b1225;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn:hover{border-color:#334155}
+    .btn.good{background:#052e1a;border-color:#064e3b}
+    .btn.ghost{background:transparent}
+    .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;border:1px solid #1f2937;border-radius:999px;padding:6px 10px;color:var(--muted)}
     .stack{display:flex;flex-wrap:wrap;gap:8px}
     .muted{color:var(--muted)}
     .wins li{margin:6px 0}
@@ -257,6 +201,8 @@
 </body>
 </html>
 
- 
+   
+   
+   
 
 
