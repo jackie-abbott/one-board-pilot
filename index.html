@@ -71,10 +71,31 @@
       <h1>One-Board Pilot</h1>
       <div class="stack">
         <span class="pill">Week of <input id="weekOf" type="date" aria-label="Week Of" /></span>
+        <span class="pill">Scribe today
+  <select id="scribe">
+    <option>Charge AM</option>
+    <option>Charge PM</option>
+    <option>Room 1</option>
+    <option>Room 2</option>
+    <option>Float</option>
+  </select>
+</span>
+
         <button class="btn" id="copyBtn" title="Copy a ready-to-paste weekly update">Copy Weekly Update</button>
         <button class="btn ghost" id="resetBtn" title="Clear everything for a fresh week">Reset Week</button>
+            <button class="btn" id="printBtn" title="Print a one-page poster">Print Poster</button>
+
       </div>
     </header>
+    </header>
+
+<div class="pill" style="margin-bottom:10px;background:#0b1f35;border-color:var(--border-strong)">
+  Mon: set One Action • All week: add Signals • Fri: 3–5 wins, stamp Proof, post & print
+</div>
+
+<div class="grid grid-cols">
+  <!-- Left column -->
+
 
     <div class="grid grid-cols">
       <!-- Left column -->
@@ -154,6 +175,14 @@
     'win1','win2','win3','win4','win5','topPlus','topMinus','notes'
   ];
   const KEY = 'one-board-pilot-v1';
+  function recentNames(){
+  try { return JSON.parse(localStorage.getItem('wins-names')) || []; }
+  catch(e){ return []; }
+}
+function saveNames(list){
+  localStorage.setItem('wins-names', JSON.stringify(list.slice(-14)));
+}
+
 
   function load(){
     try{
@@ -213,6 +242,8 @@
   $('proofBtn').addEventListener('click', stampProof);
   $('resetBtn').addEventListener('click', resetWeek);
   $('copyBtn').addEventListener('click', copyWeekly);
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+
 
   load();
 })();
