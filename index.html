@@ -187,6 +187,7 @@
     'win1','win2','win3','win4','win5','topPlus','topMinus','notes'
   ];
   const KEY = 'one-board-pilot-v1';
+  
   function recentNames(){
   try { return JSON.parse(localStorage.getItem('wins-names')) || []; }
   catch(e){ return []; }
