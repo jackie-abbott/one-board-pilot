@@ -74,13 +74,15 @@
   .btn, .pill, footer{ display:none !important; } /* hide chrome/buttons */
   .grid, .grid-cols, .grid-low{ gap:8px; }
 }
-/* === Median Method color tweak overrides === */
-:root{ --bg:#2bb3b1; }                 /* teal page background */
-.btn.good{
-  background: linear-gradient(180deg,#4f9cff,#2a91b1);  /* lighter blue */
-  border-color:#2a91b1;
-  color:#fff;
 }
+    /* === Median Method teal background + lighter blue Proof button (forced) === */
+body{ background:#2bb3b1 !important; } /* teal page background */
+.btn.good{
+  background: linear-gradient(180deg,#4f9cff,#2a91b1) !important; /* lighter blue */
+  border-color:#2a91b1 !important;
+  color:#fff !important;
+}
+
   </style>
 </head>
 <body>
