@@ -26,7 +26,8 @@
   <meta name="description" content="A tiny, single-file site to run the One-Board routine (weekly wins + one action). No PHI." />
   <style>
    :root{
-  --bg:#0a1a2f;          /* deep navy background */
+:root{
+  --bg:#2bb3b1;          /* Median Method teal background */
   --card:#0f2138;        /* navy-slate card */
   --ink:#e6f0ff;         /* very light ink */
   --muted:#9fb3c8;       /* cool slate text */
@@ -56,7 +57,12 @@
     .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #1f2937;background:#0b1225;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
     .btn:hover{border-color:#334155}
-    .btn.good{background:#052e1a;border-color:#064e3b}
+    ./* Lighter Median Method blue button */
+.btn.good{
+  background: linear-gradient(180deg,#4f9cff,#2a91b1);
+  border-color:#2a91b1;
+  color:#fff;
+}
     .btn.ghost{background:transparent}
     .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;border:1px solid #1f2937;border-radius:999px;padding:6px 10px;color:var(--muted)}
     .stack{display:flex;flex-wrap:wrap;gap:8px}
