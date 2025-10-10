@@ -63,6 +63,18 @@
     .muted{color:var(--muted)}
     .wins li{margin:6px 0}
     footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
+    /* Print-friendly one-pager */
+@media print{
+  body{ background:#fff; color:#000; }
+  .wrap{ max-width:7.5in; }
+  header{ margin-bottom:8px; }
+  .card{ background:#fff; border:1px solid #ccc; box-shadow:none; }
+  .kicker{ color:#000 !important; }
+  input, textarea{ border:none; padding:0; background:#fff; color:#000; }
+  .btn, .pill, footer{ display:none !important; } /* hide chrome/buttons */
+  .grid, .grid-cols, .grid-low{ gap:8px; }
+}
+
   </style>
 </head>
 <body>
