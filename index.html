@@ -228,6 +228,18 @@ function saveNames(list){
     const tp = $('topPlus').value; const tm = $('topMinus').value;
     const act = $('oneAction').value; const owner = $('owner').value; const start = $('start').value;
     const wins = [1,2,3,4,5].map(n => $('win'+n).value).filter(Boolean).slice(0,5);
+      const wins = [1,2,3,4,5].map(n => $('win'+n).value).filter(Boolean).slice(0,5);
+
+  // fairness nudge: warn if a name repeated within last 14 entries
+  const names = wins.map(w => (w.match(/@(\S+)/)||[])[1]).filter(Boolean);
+  const last = recentNames();
+  const repeats = names.filter(n => last.includes(n));
+  if (repeats.length){
+    alert('Heads up: recent repeat(s): ' + [...new Set(repeats)].map(n=>'@'+n).join(', '));
+  }
+  saveNames(last.concat(names));
+
+  const lines = [];
 
     const lines = [];
     lines.push(`Weekly Pulse Snapshot — Week of ${week}`);
