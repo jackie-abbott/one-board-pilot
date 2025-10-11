@@ -14,3 +14,4 @@ self.addEventListener("activate", (event) => {
       await self.clients.claim();
       // Helpful in DevTools console to confirm the new SW
       console.log("[SW] activated
+
