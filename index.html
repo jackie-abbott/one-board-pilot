@@ -6,87 +6,78 @@
   <!-- Keep this so search engines don’t index while you test -->
   <meta name="robots" content="noindex,nofollow">
   <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0a1a2f">
-<script>
-  if ("serviceWorker" in navigator) {
-    addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js"));
-  }
-</script>
+  <meta name="theme-color" content="#2bb3b1"><!-- match teal bg -->
 
-  <!-- Favicons (SVG + PNG) -->
-<link rel="icon" type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%232bb3b1'/%3E%3Crect x='12' y='30' width='40' height='4' rx='2' fill='%23e6f0ff'/%3E%3Crect x='30' y='12' width='4' height='40' rx='2' fill='%23e6f0ff'/%3E%3C/svg%3E">
-<link rel="icon" type="image/png" sizes="32x32"
-      href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABMklEQVRYCe2XvUoDQRSGv3o5pQ8wWgqkGq0C1KqgqB3EYoVYQeJkq7CwJzH8Jb2Dkq2bCzQhD2B1uJ7rj0Nf0G2E5Qb0p8+v8m9y0Q7y9w1B9G6w5m3S8rD8G2J0zYIuVqC2H0l7rU1g4b0mQe5b3gQJpJ3zK8JpI3JkCqgXr2w0x7yqgV7bW0V6vS1o0oE9g2c5b1z2Qq9m1Y3YQw0wJvYkQqkQv0l0Zq4aU0mLkQj8X8JmKxgJc6a3u5Qk6g6mGJ4Dcq3w7f2iQqQpRr0iQFfP2tq6XQp6Q1g7kHkXo3iJw7L2q6gF3qv0b9VJxY2w/8v3vJXo1mC3j0s8s3d6yD7yN2k3h0rj7JwB3n2y3n9CkJ3h4mY5bS1X0F3m8rT1qg7e6Qk9i9Q8N1Ckq2zj7wQ0VQqkqGJmTe0bY6pTe7kN3Ujv4Q6/9QOa0j6C2m7o9QAAAABJRU5ErkJggg==">
-<!-- iOS Home Screen icon -->
-<link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+  <!-- Service worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js"));
+    }
+  </script>
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
 
   <title>One-Board Pilot</title>
   <meta name="description" content="A tiny, single-file site to run the One-Board routine (weekly wins + one action). No PHI." />
   <style>
-   :root{
-:root{
-  --bg:#2bb3b1;          /* Median Method teal background */
-  --card:#0f2138;        /* navy-slate card */
-  --ink:#e6f0ff;         /* very light ink */
-  --muted:#9fb3c8;       /* cool slate text */
-  --accent:#2bb3b1;      /* teal (primary) */
-  --accent-2:#2a91b1;    /* blue-teal (secondary) */
-  --warn:#f59e0b;        /* amber */
-  --danger:#dc2626;      /* red */
-  --border:#1f2f46;      /* dark border */
-  --border-strong:#274160;/* stronger border */
+    :root{
+      --bg:#2bb3b1;          /* Median Method teal background */
+      --card:#0f2138;        /* navy-slate card */
+      --ink:#e6f0ff;         /* very light ink */
+      --muted:#c7d5e5;       /* cool slate text */
+      --accent:#2bb3b1;      /* teal (primary) */
+      --accent-2:#2a91b1;    /* blue-teal (secondary) */
+      --warn:#f59e0b;        /* amber */
+      --danger:#dc2626;      /* red */
+      --border:#1f2f46;      /* dark border */
+      --border-strong:#274160;/* stronger border */
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
     .wrap{max-width:1100px;margin:0 auto;padding:16px}
     header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
-    h1{font-size:20px;margin:0;font-weight:700;letter-spacing:0.3px}
-    h2.kicker{margin:0 0 8px 0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
-    .card{background:linear-gradient(180deg,#0b1225 0%,#0a0f1f 100%);border:1px solid #1f2937;border-radius:16px;padding:16px}
+    h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.3px}
+    h2.kicker{margin:0 0 8px 0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .card{background:linear-gradient(180deg,#0c1e35 0%,#0a1a2f 100%);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.25)}
     .grid{display:grid;gap:12px}
     @media(min-width:900px){
       .grid-cols{grid-template-columns:2fr 1fr}
       .grid-low{grid-template-columns:2fr 1fr}
     }
     label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="text"], input[type="date"], textarea{width:100%;border:1px solid #1f2937;border-radius:10px;background:#0b1225;color:var(--ink);padding:10px 12px}
+    input[type="text"], input[type="date"], textarea{width:100%;border:1px solid var(--border-strong);border-radius:10px;background:#0b1f35;color:var(--ink);padding:10px 12px}
+    input[type="text"]:focus, input[type="date"]:focus, textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(43,179,177,.25)}
     textarea{min-height:64px;resize:vertical}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #1f2937;background:#0b1225;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
-    .btn:hover{border-color:#334155}
-    ./* Lighter Median Method blue button */
-.btn.good{
-  background: linear-gradient(180deg,#4f9cff,#2a91b1);
-  border-color:#2a91b1;
-  color:#fff;
-}
-    .btn.ghost{background:transparent}
-    .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;border:1px solid #1f2937;border-radius:999px;padding:6px 10px;color:var(--muted)}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-strong);background:#0b1f35;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn:hover{border-color:#3a5575}
+    /* Lighter Median Method blue "Proof" button */
+    .btn.good{
+      background:linear-gradient(180deg,#4f9cff,#2a91b1);
+      border-color:#2a91b1;
+      color:#fff;
+    }
+    .btn.ghost{background:transparent;border-color:transparent;color:var(--ink)}
+    .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;border:1px solid var(--border);border-radius:999px;padding:6px 10px;color:var(--muted);background:#0b1f35}
     .stack{display:flex;flex-wrap:wrap;gap:8px}
     .muted{color:var(--muted)}
     .wins li{margin:6px 0}
     footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
+
     /* Print-friendly one-pager */
-@media print{
-  body{ background:#fff; color:#000; }
-  .wrap{ max-width:7.5in; }
-  header{ margin-bottom:8px; }
-  .card{ background:#fff; border:1px solid #ccc; box-shadow:none; }
-  .kicker{ color:#000 !important; }
-  input, textarea{ border:none; padding:0; background:#fff; color:#000; }
-  .btn, .pill, footer{ display:none !important; } /* hide chrome/buttons */
-  .grid, .grid-cols, .grid-low{ gap:8px; }
-}
-    /* === Median Method teal background + lighter blue Proof button (forced) === */
-body{ background:#2bb3b1 !important; } /* teal page background */
-.btn.good{
-  background: linear-gradient(180deg,#4f9cff,#2a91b1) !important; /* lighter blue */
-  border-color:#2a91b1 !important;
-  color:#fff !important;
-}
+    @media print{
+      body{ background:#fff; color:#000; }
+      .wrap{ max-width:7.5in; }
+      header{ margin-bottom:8px; }
+      .card{ background:#fff; border:1px solid #ccc; box-shadow:none; }
+      .kicker{ color:#000 !important; }
+      input, textarea{ border:none; padding:0; background:#fff; color:#000; }
+      .btn, .pill, footer{ display:none !important; } /* hide chrome/buttons */
+      .grid, .grid-cols, .grid-low{ gap:8px; }
+    }
   </style>
 </head>
 <body>
@@ -96,30 +87,24 @@ body{ background:#2bb3b1 !important; } /* teal page background */
       <div class="stack">
         <span class="pill">Week of <input id="weekOf" type="date" aria-label="Week Of" /></span>
         <span class="pill">Scribe today
-  <select id="scribe">
-    <option>Charge AM</option>
-    <option>Charge PM</option>
-    <option>Room 1</option>
-    <option>Room 2</option>
-    <option>Float</option>
-  </select>
-</span>
-
+          <select id="scribe">
+            <option>Charge AM</option>
+            <option>Charge PM</option>
+            <option>Room 1</option>
+            <option>Room 2</option>
+            <option>Float</option>
+          </select>
+        </span>
         <button class="btn" id="copyBtn" title="Copy a ready-to-paste weekly update">Copy Weekly Update</button>
         <button class="btn ghost" id="resetBtn" title="Clear everything for a fresh week">Reset Week</button>
-            <button class="btn" id="printBtn" title="Print a one-page poster">Print Poster</button>
-
+        <button class="btn" id="printBtn" title="Print a one-page poster">Print Poster</button>
       </div>
     </header>
-    </header>
 
-<div class="pill" style="margin-bottom:10px;background:#0b1f35;border-color:var(--border-strong)">
-  Mon: set One Action • All week: add Signals • Fri: 3–5 wins, stamp Proof, post & print
-</div>
-
-<div class="grid grid-cols">
-  <!-- Left column -->
-
+    <!-- Weekly rhythm reminder -->
+    <div class="pill" style="margin-bottom:10px;background:#0b1f35;border-color:var(--border-strong)">
+      Mon: set One Action • All week: add Signals • Fri: 3–5 wins, stamp Proof, post & print
+    </div>
 
     <div class="grid grid-cols">
       <!-- Left column -->
@@ -191,107 +176,95 @@ body{ background:#2bb3b1 !important; } /* teal page background */
     </footer>
   </div>
 
-<script>
-(function(){
-  const $ = id => document.getElementById(id);
-  const ids = [
-    'weekOf','signal1','signal2','signal3','oneAction','owner','start',
-    'win1','win2','win3','win4','win5','topPlus','topMinus','notes'
-  ];
-  const KEY = 'one-board-pilot-v1';
-  
-  function recentNames(){
-  try { return JSON.parse(localStorage.getItem('wins-names')) || []; }
-  catch(e){ return []; }
-}
-function saveNames(list){
-  localStorage.setItem('wins-names', JSON.stringify(list.slice(-14)));
-}
+  <script>
+  (function(){
+    const $ = id => document.getElementById(id);
+    const ids = [
+      'weekOf','scribe','signal1','signal2','signal3','oneAction','owner','start',
+      'win1','win2','win3','win4','win5','topPlus','topMinus','notes'
+    ];
+    const KEY = 'one-board-pilot-v1';
 
+    // fairness memory for Weekly Wins
+    function recentNames(){
+      try { return JSON.parse(localStorage.getItem('wins-names')) || []; }
+      catch(e){ return []; }
+    }
+    function saveNames(list){
+      localStorage.setItem('wins-names', JSON.stringify(list.slice(-14)));
+    }
 
-  function load(){
-    try{
-      const raw = localStorage.getItem(KEY);
-      if(!raw) return;
-      const data = JSON.parse(raw);
-      ids.forEach(id=>{ if(data[id]!==undefined) $(id).value = data[id]; });
-      if(data.proofStamp){ $('proofStamp').textContent = 'Proof: ' + data.proofStamp; }
-    }catch(e){ console.warn('Load failed', e); }
-  }
-  function save(){
-    const data = {};
-    ids.forEach(id=> data[id] = $(id).value.trim());
-    data.proofStamp = $('proofStamp').textContent || '';
-    try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ console.warn('Save failed', e); }
-  }
-  function resetWeek(){
-    if(!confirm('Clear all fields for a fresh week?')) return;
-    ids.forEach(id=> $(id).value = '');
-    $('proofStamp').textContent='';
-    save();
-  }
-  function stampProof(){
-    const now = new Date();
-    const stamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-    $('proofStamp').textContent = 'DONE — ' + stamp;
-    save();
-  }
-  function copyWeekly(){
-    const week = $('weekOf').value || '(set week)';
-    const tp = $('topPlus').value; const tm = $('topMinus').value;
-    const act = $('oneAction').value; const owner = $('owner').value; const start = $('start').value;
-    const wins = [1,2,3,4,5].map(n => $('win'+n).value).filter(Boolean).slice(0,5);
+    function load(){
+      try{
+        const raw = localStorage.getItem(KEY);
+        if(!raw) return;
+        const data = JSON.parse(raw);
+        ids.forEach(id=>{ if(data[id]!==undefined) $(id).value = data[id]; });
+        if(data.proofStamp){ $('proofStamp').textContent = 'Proof: ' + data.proofStamp; }
+      }catch(e){ console.warn('Load failed', e); }
+    }
+    function save(){
+      const data = {};
+      ids.forEach(id=> data[id] = ($(id)?.value || '').trim());
+      data.proofStamp = $('proofStamp').textContent || '';
+      try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ console.warn('Save failed', e); }
+    }
+    function resetWeek(){
+      if(!confirm('Clear all fields for a fresh week?')) return;
+      ids.forEach(id=> { if($(id)) $(id).value = ''; });
+      $('proofStamp').textContent='';
+      save();
+    }
+    function stampProof(){
+      const now = new Date();
+      const stamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      $('proofStamp').textContent = 'DONE — ' + stamp;
+      save();
+    }
+    function copyWeekly(){
+      const week = $('weekOf').value || '(set week)';
+      const tp = $('topPlus').value; const tm = $('topMinus').value;
+      const act = $('oneAction').value; const owner = $('owner').value; const start = $('start').value;
       const wins = [1,2,3,4,5].map(n => $('win'+n).value).filter(Boolean).slice(0,5);
 
-  // fairness nudge: warn if a name repeated within last 14 entries
-  const names = wins.map(w => (w.match(/@(\S+)/)||[])[1]).filter(Boolean);
-  const last = recentNames();
-  const repeats = names.filter(n => last.includes(n));
-  if (repeats.length){
-    alert('Heads up: recent repeat(s): ' + [...new Set(repeats)].map(n=>'@'+n).join(', '));
-  }
-  saveNames(last.concat(names));
+      // fairness nudge: warn if a name repeated within last 14 entries
+      const names = wins.map(w => (w.match(/@(\S+)/)||[])[1]).filter(Boolean);
+      const last = recentNames();
+      const repeats = names.filter(n => last.includes(n));
+      if (repeats.length){
+        alert('Heads up: recent repeat(s): ' + [...new Set(repeats)].map(n=>'@'+n).join(', '));
+      }
+      saveNames(last.concat(names));
 
-  const lines = [];
-
-    const lines = [];
-    lines.push(`Weekly Pulse Snapshot — Week of ${week}`);
-    if(tp) lines.push(`Top +1: ${tp}`);
-    if(tm) lines.push(`Top −1: ${tm}`);
-    if(act){
-      lines.push(`One action (this week): ${act}` + (owner?` (owner: ${owner}`:'') + (start?`, starts: ${start}`:'') + (owner||start?')':''));
+      const lines = [];
+      lines.push(`Weekly Pulse Snapshot — Week of ${week}`);
+      if(tp) lines.push(`Top +1: ${tp}`);
+      if(tm) lines.push(`Top −1: ${tm}`);
+      if(act){
+        lines.push(`One action (this week): ${act}` + (owner?` (owner: ${owner}`:'') + (start?`, starts: ${start}`:'') + (owner||start?')':''));
+      }
+      if(wins.length){
+        lines.push('');
+        lines.push('Weekly Wins');
+        wins.forEach(w=> lines.push(`• ${w}`));
+      }
+      const txt = lines.join('\n');
+      navigator.clipboard.writeText(txt).then(()=>{
+        $('copyBtn').textContent = 'Copied!';
+        setTimeout(()=> $('copyBtn').textContent = 'Copy Weekly Update', 1400);
+      }).catch(()=>{
+        alert('Copy failed — your browser may block clipboard writes. You can still select & copy manually.');
+      });
     }
-    if(wins.length){
-      lines.push('');
-      lines.push('Weekly Wins');
-      wins.forEach(w=> lines.push(`• ${w}`));
-    }
-    const txt = lines.join('\n');
-    navigator.clipboard.writeText(txt).then(()=>{
-      $('copyBtn').textContent = 'Copied!';
-      setTimeout(()=> $('copyBtn').textContent = 'Copy Weekly Update', 1400);
-    }).catch(()=>{
-      alert('Copy failed — your browser may block clipboard writes. You can still select & copy manually.');
-    });
-  }
 
-  ids.forEach(id => $(id).addEventListener('input', save));
-  $('proofBtn').addEventListener('click', stampProof);
-  $('resetBtn').addEventListener('click', resetWeek);
-  $('copyBtn').addEventListener('click', copyWeekly);
-  document.getElementById('printBtn').addEventListener('click', () => window.print());
+    ids.forEach(id => { const el=$(id); if(el) el.addEventListener('input', save); });
+    $('proofBtn').addEventListener('click', stampProof);
+    $('resetBtn').addEventListener('click', resetWeek);
+    $('copyBtn').addEventListener('click', copyWeekly);
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
 
-
-  load();
-})();
-</script>
+    load();
+  })();
+  </script>
 </body>
 </html>
-
-   
-   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%232bb3b1'/%3E%3Crect x='12' y='30' width='40' height='4' rx='2' fill='%23e6f0ff'/%3E%3Crect x='30' y='12' width='4' height='40' rx='2' fill='%23e6f0ff'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%230a1a2f'/%3E%3Ccircle cx='90' cy='90' r='78' fill='%232bb3b1'/%3E%3Crect x='36' y='86' width='108' height='8' rx='4' fill='%23e6f0ff'/%3E%3Crect x='86' y='36' width='8' height='108' rx='4' fill='%23e6f0ff'/%3E%3C/svg%3E">
-
-   
-
-
