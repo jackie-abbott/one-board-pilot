@@ -66,6 +66,7 @@
     .muted{color:var(--muted)}
     .wins li{margin:6px 0}
     footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
+    button:disabled, input:disabled, textarea:disabled, select:disabled{opacity:.6; cursor:not-allowed}
 
     /* Print-friendly one-pager */
     @media print{
@@ -87,7 +88,7 @@
       <div class="stack">
         <span class="pill">Week of <input id="weekOf" type="date" aria-label="Week Of" /></span>
         <span class="pill">Scribe today
-          <select id="scribe">
+          <select id="scribe" aria-label="Scribe today">
             <option>Charge AM</option>
             <option>Charge PM</option>
             <option>Room 1</option>
@@ -98,6 +99,12 @@
         <button class="btn" id="copyBtn" title="Copy a ready-to-paste weekly update">Copy Weekly Update</button>
         <button class="btn ghost" id="resetBtn" title="Clear everything for a fresh week">Reset Week</button>
         <button class="btn" id="printBtn" title="Print a one-page poster">Print Poster</button>
+        <button class="btn" id="shareBtn" title="Share or copy the link">Share Link</button>
+        <button class="btn" id="exportBtn" title="Download current week data">Export</button>
+        <button class="btn ghost" id="importBtn" title="Load saved data">Import</button>
+        <button class="btn ghost" id="clearBtn"  title="Erase local data on this device">Clear Data</button>
+        <button class="btn ghost" id="lockBtn"  title="Lock/unlock kiosk">Lock</button>
+        <input id="filePick" type="file" accept="application/json" style="display:none">
       </div>
     </header>
 
@@ -151,6 +158,7 @@
     <div class="grid grid-low" style="margin-top:12px">
       <section class="card">
         <h2 class="kicker">Weekly Wins (3–5 bullets, Behavior → Impact)</h2>
+        <div id="equityMeter" class="muted" style="margin:-4px 0 8px 0;font-size:12px"></div>
         <ol class="wins" style="padding-left:18px">
           <li><input id="win1" type="text" placeholder="@Name — covered US add-on at 15:10 → cleared backlog before shift change." /></li>
           <li><input id="win2" type="text" placeholder="@Name — labeled Probe #3 and stocked gel → first-use ready." /></li>
@@ -185,7 +193,7 @@
     ];
     const KEY = 'one-board-pilot-v1';
 
-    // fairness memory for Weekly Wins
+    // ===== Fairness memory for Weekly Wins =====
     function recentNames(){
       try { return JSON.parse(localStorage.getItem('wins-names')) || []; }
       catch(e){ return []; }
@@ -194,12 +202,13 @@
       localStorage.setItem('wins-names', JSON.stringify(list.slice(-14)));
     }
 
+    // ===== Load / Save =====
     function load(){
       try{
         const raw = localStorage.getItem(KEY);
         if(!raw) return;
         const data = JSON.parse(raw);
-        ids.forEach(id=>{ if(data[id]!==undefined) $(id).value = data[id]; });
+        ids.forEach(id=>{ if(data[id]!==undefined && $(id)) $(id).value = data[id]; });
         if(data.proofStamp){ $('proofStamp').textContent = 'Proof: ' + data.proofStamp; }
       }catch(e){ console.warn('Load failed', e); }
     }
@@ -209,11 +218,14 @@
       data.proofStamp = $('proofStamp').textContent || '';
       try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ console.warn('Save failed', e); }
     }
+
+    // ===== Reset & Proof =====
     function resetWeek(){
       if(!confirm('Clear all fields for a fresh week?')) return;
       ids.forEach(id=> { if($(id)) $(id).value = ''; });
       $('proofStamp').textContent='';
       save();
+      updateEquityMeter();
     }
     function stampProof(){
       const now = new Date();
@@ -221,6 +233,8 @@
       $('proofStamp').textContent = 'DONE — ' + stamp;
       save();
     }
+
+    // ===== Weekly Update copy + fairness nudge =====
     function copyWeekly(){
       const week = $('weekOf').value || '(set week)';
       const tp = $('topPlus').value; const tm = $('topMinus').value;
@@ -255,15 +269,98 @@
       }).catch(()=>{
         alert('Copy failed — your browser may block clipboard writes. You can still select & copy manually.');
       });
+
+      updateEquityMeter();
     }
 
-    ids.forEach(id => { const el=$(id); if(el) el.addEventListener('input', save); });
+    // ===== Equity meter (unique names this week) =====
+    function updateEquityMeter(){
+      const wins = [1,2,3,4,5].map(n => $('win'+n).value).filter(Boolean);
+      const names = wins.map(w => (w.match(/@(\S+)/)||[])[1]).filter(Boolean);
+      const uniq = new Set(names).size;
+      $('equityMeter').textContent = wins.length ? `Recognition equity: ${uniq} unique name(s) this week` : '';
+    }
+
+    // ===== Export / Import / Clear =====
+    function exportData(){
+      const raw = localStorage.getItem(KEY) || "{}";
+      const blob = new Blob([raw], {type:"application/json"});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `one-board-${($('weekOf').value||'week')}.json`;
+      a.click(); URL.revokeObjectURL(a.href);
+    }
+    function importData(){ $('filePick').click(); }
+    $('filePick').addEventListener('change', e=>{
+      const f = e.target.files[0]; if(!f) return;
+      const r = new FileReader();
+      r.onload = () => { try { localStorage.setItem(KEY, r.result); load(); updateEquityMeter(); } catch(e){ alert('Import failed (bad file)'); } };
+      r.readAsText(f);
+      e.target.value = '';
+    });
+    function clearData(){
+      if(confirm('Erase local data on this device?')){
+        localStorage.removeItem(KEY);
+        localStorage.removeItem('wins-names');
+        location.reload();
+      }
+    }
+
+    // ===== Kiosk Lock (PIN) =====
+    let LOCKED = (localStorage.getItem('one-board-locked') === '1');
+    let PIN = localStorage.getItem('one-board-pin') || '';
+    function setLocked(flag){
+      LOCKED = flag;
+      localStorage.setItem('one-board-locked', flag ? '1' : '0');
+      const ctrls = document.querySelectorAll('input, textarea, button, select');
+      ctrls.forEach(el=>{
+        // Keep these usable while locked:
+        if(['lockBtn','printBtn','shareBtn'].includes(el.id)) return;
+        el.disabled = flag;
+      });
+      $('lockBtn').textContent = flag ? 'Unlock' : 'Lock';
+    }
+    function toggleLock(){
+      if(!LOCKED){
+        if(!PIN){
+          PIN = prompt('Set a 4-digit PIN to lock/unlock:', '') || '';
+          if(!PIN) return;
+          localStorage.setItem('one-board-pin', PIN);
+        }
+        setLocked(true);
+      }else{
+        const tryPin = prompt('Enter PIN to unlock:', '');
+        if(tryPin === PIN) setLocked(false); else alert('Wrong PIN');
+      }
+    }
+
+    // ===== Share Link =====
+    async function shareLink(){
+      const url = location.href;
+      if (navigator.share) {
+        try { await navigator.share({ title:'One-Board', url }); } catch(e){}
+      } else {
+        await navigator.clipboard.writeText(url);
+        alert('Link copied:\n' + url);
+      }
+    }
+
+    // ===== Wire up events =====
+    ids.forEach(id => { const el=$(id); if(el) el.addEventListener('input', () => { save(); if(id.startsWith('win')) updateEquityMeter(); }); });
     $('proofBtn').addEventListener('click', stampProof);
     $('resetBtn').addEventListener('click', resetWeek);
     $('copyBtn').addEventListener('click', copyWeekly);
-    document.getElementById('printBtn').addEventListener('click', () => window.print());
+    $('printBtn').addEventListener('click', () => window.print());
+    $('shareBtn').addEventListener('click', shareLink);
+    $('exportBtn').addEventListener('click', exportData);
+    $('importBtn').addEventListener('click', importData);
+    $('clearBtn').addEventListener('click', clearData);
+    $('lockBtn').addEventListener('click', toggleLock);
 
+    // ===== Init =====
     load();
+    updateEquityMeter();
+    setLocked(LOCKED);
   })();
   </script>
 </body>
