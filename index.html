@@ -399,5 +399,17 @@
     setLocked(LOCKED);
   })();
   </script>
+<!-- Supabase init: paste this block directly above </body> -->
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+  // ⬇️ paste YOUR values from Settings → API
+  const SUPABASE_URL = https://munxfprhqdpnrchzxdtj.supabase.co
+  const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11bnhmcHJocWRwbnJjaHp4ZHRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxOTIzOTcsImV4cCI6MjA3NTc2ODM5N30.L0o3YhHlS7fEGob2S9kgdMn41RTCzVhjb4JtZs730Pg
+
+  // Make it available to other scripts if needed:
+  window.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+</script>
+
 </body>
 </html>
