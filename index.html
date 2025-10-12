@@ -79,8 +79,21 @@
 
     /* Lighter Median Method blue "Proof" button (from temp override) */
     .btn.good{
-      background:linear-gradient(180deg,#4f9cff,#2a91b1);
-      border-color:#2a91b1;color:#fff;
+     /* Teal Proof button (Median Method) */
+.btn.good{
+  background: linear-gradient(180deg, #36c9c7, #2bb3b1); /* light teal -> brand teal */
+  border-color: #1f8f8d; /* slightly darker teal border */
+  color: #ffffff;        /* text; switch to #0a1a2f if you prefer dark ink */
+  font-weight: 600;
+}
+.btn.good:hover{ filter: brightness(1.06); }
+.btn.good:active{ transform: translateY(1px); }
+.btn.good:focus-visible{
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(43,179,177,.40);
+}
+
     }
 
     .btn.ghost{background:transparent;border-color:transparent;color:var(--ink)}
