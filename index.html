@@ -6,7 +6,7 @@
   <!-- Keep this so search engines don’t index while you test -->
   <meta name="robots" content="noindex,nofollow">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#2bb3b1"><!-- match teal bg -->
+  <meta name="theme-color" content="#0a1a2f"><!-- matches navy background -->
 
   <!-- Service worker -->
   <script>
@@ -18,48 +18,74 @@
   <!-- Favicons -->
   <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <meta name="description" content="A tiny, single-file site to run the One-Board routine (weekly wins + one action). No PHI.">
+
+  <title>One-Board Pilot</title>
+  <meta name="description" content="One-Board Pilot helps hospital teams run a simple weekly routine: track Signals, choose one Action, stamp Proof Done, and capture 3–5 Weekly Wins. No PHI, fast to use, kiosk-friendly." />
+
   <style>
     :root{
-      --bg:#2bb3b1;          /* Median Method teal background */
-      --card:#0f2138;        /* navy-slate card */
-      --ink:#e6f0ff;         /* very light ink */
-      --muted:#c7d5e5;       /* cool slate text */
-      --accent:#2bb3b1;      /* teal (primary) */
-      --accent-2:#2a91b1;    /* blue-teal (secondary) */
-      --warn:#f59e0b;        /* amber */
-      --danger:#dc2626;      /* red */
-      --border:#1f2f46;      /* dark border */
+      --bg:#0a1a2f;         /* deep navy */
+      --card:#0f2138;       /* navy-slate card */
+      --ink:#e6f0ff;        /* very light ink */
+      --muted:#c7d5e5;      /* cool slate text */
+      --accent:#2bb3b1;     /* teal (primary) */
+      --accent-2:#2a91b1;   /* blue-teal (secondary) */
+      --warn:#f59e0b;       /* amber */
+      --danger:#dc2626;     /* red */
+      --border:#1f2f46;     /* dark border */
       --border-strong:#274160;/* stronger border */
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+
+    /* Option A: navy base with subtle teal glow (moved from temp override) */
+    body{
+      margin:0;color:var(--ink);
+      font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 600px at 12% -10%, rgba(43,179,177,.14), transparent 55%),
+        radial-gradient(800px 400px at 95% 0, rgba(43,179,177,.08), transparent 60%),
+        var(--bg);
+    }
+
     .wrap{max-width:1100px;margin:0 auto;padding:16px}
     header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
     h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.3px}
     h2.kicker{margin:0 0 8px 0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-    .card{background:linear-gradient(180deg,#0c1e35 0%,#0a1a2f 100%);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+
+    /* Lighter cards for contrast (from temp override) */
+    .card{background:#0b1f35;border:1px solid var(--border-strong);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+
     .grid{display:grid;gap:12px}
     @media(min-width:900px){
       .grid-cols{grid-template-columns:2fr 1fr}
       .grid-low{grid-template-columns:2fr 1fr}
     }
+
     label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="text"], input[type="date"], textarea{width:100%;border:1px solid var(--border-strong);border-radius:10px;background:#0b1f35;color:var(--ink);padding:10px 12px}
-    input[type="text"]:focus, input[type="date"]:focus, textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(43,179,177,.25)}
+    input[type="text"], input[type="date"], textarea{
+      width:100%;border:1px solid var(--border-strong);border-radius:10px;
+      background:#0b1f35;color:var(--ink);padding:10px 12px
+    }
+    input[type="text"]:focus, input[type="date"]:focus, textarea:focus{
+      outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(43,179,177,.25)
+    }
     textarea{min-height:64px;resize:vertical}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-strong);background:#0b1f35;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-strong);
+      background:#0b1f35;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
     .btn:hover{border-color:#3a5575}
-    /* Lighter Median Method blue "Proof" button */
+
+    /* Lighter Median Method blue "Proof" button (from temp override) */
     .btn.good{
       background:linear-gradient(180deg,#4f9cff,#2a91b1);
-      border-color:#2a91b1;
-      color:#fff;
+      border-color:#2a91b1;color:#fff;
     }
+
     .btn.ghost{background:transparent;border-color:transparent;color:var(--ink)}
-    .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;border:1px solid var(--border);border-radius:999px;padding:6px 10px;color:var(--muted);background:#0b1f35}
+    .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;border:1px solid var(--border);
+      border-radius:999px;padding:6px 10px;color:var(--muted);background:#0b1f35}
     .stack{display:flex;flex-wrap:wrap;gap:8px}
     .muted{color:var(--muted)}
     .wins li{margin:6px 0}
@@ -74,19 +100,9 @@
       .card{ background:#fff; border:1px solid #ccc; box-shadow:none; }
       .kicker{ color:#000 !important; }
       input, textarea{ border:none; padding:0; background:#fff; color:#000; }
-      .btn, .pill, footer{ display:none !important; } /* hide chrome/buttons */
+      .btn, .pill, footer{ display:none !important; }
       .grid, .grid-cols, .grid-low{ gap:8px; }
     }
-
-    /* Temporary override to confirm Option A is active */
-    body{
-      background:
-        radial-gradient(1200px 600px at 12% -10%, rgba(43,179,177,.14), transparent 55%),
-        radial-gradient(800px 400px at 95% 0, rgba(43,179,177,.08), transparent 60%),
-        #0a1a2f !important;
-    }
-    .card{ background:#0b1f35 !important; border-color:#274160 !important; }
-    .btn.good{ background:linear-gradient(180deg,#4f9cff,#2a91b1) !important; border-color:#2a91b1 !important; color:#fff !important; }
   </style>
 </head>
 <body>
@@ -104,7 +120,7 @@
             <option>Float</option>
           </select>
         </span>
-        <button class="btn" id="copyBtn" title="Copy a ready-to-paste weekly update">Copy Weekly Update</button>
+        <button class="btn" id="copyBtn"  title="Copy a ready-to-paste weekly update">Copy Weekly Update</button>
         <button class="btn ghost" id="resetBtn" title="Clear everything for a fresh week">Reset Week</button>
         <button class="btn" id="printBtn" title="Print a one-page poster">Print Poster</button>
         <button class="btn" id="shareBtn" title="Share or copy the link">Share Link</button>
@@ -201,7 +217,7 @@
     ];
     const KEY = 'one-board-pilot-v1';
 
-    // ===== Fairness memory for Weekly Wins =====
+    // === Fairness memory for Weekly Wins ===
     function recentNames(){
       try { return JSON.parse(localStorage.getItem('wins-names')) || []; }
       catch(e){ return []; }
@@ -210,7 +226,7 @@
       localStorage.setItem('wins-names', JSON.stringify(list.slice(-14)));
     }
 
-    // ===== Load / Save =====
+    // === Load / Save ===
     function load(){
       try{
         const raw = localStorage.getItem(KEY);
@@ -227,7 +243,7 @@
       try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ console.warn('Save failed', e); }
     }
 
-    // ===== Reset & Proof =====
+    // === Reset & Proof ===
     function resetWeek(){
       if(!confirm('Clear all fields for a fresh week?')) return;
       ids.forEach(id=> { if($(id)) $(id).value = ''; });
@@ -242,14 +258,14 @@
       save();
     }
 
-    // ===== Weekly Update copy + fairness nudge =====
+    // === Weekly Update copy + fairness nudge ===
     function copyWeekly(){
       const week = $('weekOf').value || '(set week)';
       const tp = $('topPlus').value; const tm = $('topMinus').value;
       const act = $('oneAction').value; const owner = $('owner').value; const start = $('start').value;
       const wins = [1,2,3,4,5].map(n => $('win'+n).value).filter(Boolean).slice(0,5);
 
-      // fairness nudge: warn if a name repeated within last 14 entries
+      // fairness nudge
       const names = wins.map(w => (w.match(/@(\S+)/)||[])[1]).filter(Boolean);
       const last = recentNames();
       const repeats = names.filter(n => last.includes(n));
@@ -281,7 +297,7 @@
       updateEquityMeter();
     }
 
-    // ===== Equity meter (unique names this week) =====
+    // === Equity meter ===
     function updateEquityMeter(){
       const wins = [1,2,3,4,5].map(n => $('win'+n).value).filter(Boolean);
       const names = wins.map(w => (w.match(/@(\S+)/)||[])[1]).filter(Boolean);
@@ -289,7 +305,7 @@
       $('equityMeter').textContent = wins.length ? `Recognition equity: ${uniq} unique name(s) this week` : '';
     }
 
-    // ===== Export / Import / Clear =====
+    // === Export / Import / Clear ===
     function exportData(){
       const raw = localStorage.getItem(KEY) || "{}";
       const blob = new Blob([raw], {type:"application/json"});
@@ -314,7 +330,7 @@
       }
     }
 
-    // ===== Kiosk Lock (PIN) =====
+    // === Kiosk Lock (PIN) ===
     let LOCKED = (localStorage.getItem('one-board-locked') === '1');
     let PIN = localStorage.getItem('one-board-pin') || '';
     function setLocked(flag){
@@ -322,7 +338,6 @@
       localStorage.setItem('one-board-locked', flag ? '1' : '0');
       const ctrls = document.querySelectorAll('input, textarea, button, select');
       ctrls.forEach(el=>{
-        // Keep these usable while locked:
         if(['lockBtn','printBtn','shareBtn'].includes(el.id)) return;
         el.disabled = flag;
       });
@@ -342,7 +357,7 @@
       }
     }
 
-    // ===== Share Link =====
+    // === Share Link ===
     async function shareLink(){
       const url = location.href;
       if (navigator.share) {
@@ -353,7 +368,7 @@
       }
     }
 
-    // ===== Wire up events =====
+    // === Wire up events ===
     ids.forEach(id => { const el=$(id); if(el) el.addEventListener('input', () => { save(); if(id.startsWith('win')) updateEquityMeter(); }); });
     $('proofBtn').addEventListener('click', stampProof);
     $('resetBtn').addEventListener('click', resetWeek);
@@ -365,12 +380,11 @@
     $('clearBtn').addEventListener('click', clearData);
     $('lockBtn').addEventListener('click', toggleLock);
 
-    // ===== Init =====
+    // === Init ===
     load();
     updateEquityMeter();
     setLocked(LOCKED);
   })();
   </script>
-  
 </body>
 </html>
