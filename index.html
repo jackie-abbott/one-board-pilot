@@ -410,6 +410,63 @@
   // Make it available to other scripts if needed:
   window.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 </script>
+<!-- ⬇️ DROP-IN AUTH BAR (paste directly above </body>) -->
+<div id="authBar" style="position:fixed;top:10px;right:10px;z-index:1000;
+  display:flex;gap:8px;align-items:center;background:#fff;border:1px solid #e5e7eb;
+  padding:8px 10px;border-radius:999px;font-family:ui-sans-serif,system-ui;">
+  <span id="rolePill" style="font-size:12px;color:#6b7280">signed out</span>
+  <button id="signinBtn" style="border:1px solid #e5e7eb;padding:6px 10px;border-radius:999px;cursor:pointer;">Sign in</button>
+  <button id="signoutBtn" style="display:none;border:1px solid #e5e7eb;padding:6px 10px;border-radius:999px;cursor:pointer;background:#f9fafb;">Sign out</button>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+  // 🔑 Replace with your real values from Supabase → Settings → API
+  const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co'
+  const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  window.supabase = supabase // optional: expose for other scripts
+
+  // UI elements
+  const signinBtn  = document.getElementById('signinBtn')
+  const signoutBtn = document.getElementById('signoutBtn')
+  const rolePill   = document.getElementById('rolePill')
+
+  function paint(authSession) {
+    if (authSession) {
+      signinBtn.style.display = 'none'
+      signoutBtn.style.display = 'inline-block'
+      rolePill.textContent = authSession.user.email || 'signed in'
+    } else {
+      signinBtn.style.display = 'inline-block'
+      signoutBtn.style.display = 'none'
+      rolePill.textContent = 'signed out'
+    }
+  }
+
+  // Initial session + listener
+  const { data: initial } = await supabase.auth.getSession()
+  paint(initial.session)
+
+  supabase.auth.onAuthStateChange((_event, session) => paint(session))
+
+  // Actions
+  signinBtn.onclick = async () => {
+    const email = prompt('Enter your work email for a magic link:')
+    if (!email) return
+    // Redirect back to your current page; Auth → URL Configuration should also have your Site URL set
+    const emailRedirectTo = window.location.origin + window.location.pathname
+    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo } })
+    if (error) alert(error.message); else alert('Check your email for the sign-in link.')
+  }
+
+  signoutBtn.onclick = async () => {
+    await supabase.auth.signOut()
+  }
+</script>
+<!-- ⬆️ END DROP-IN AUTH BAR -->
 
 </body>
 </html>
