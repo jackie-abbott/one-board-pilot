@@ -20,7 +20,7 @@
   <link rel="apple-touch-icon" href="icon-192.png">
 
   <title>One-Board Pilot</title>
-  <meta name="description" content="One-Board Pilot helps hospital teams run a simple weekly routine: track Signals, choose one Action, stamp Proof Done, and capture 3–5 Weekly Wins. No PHI, fast to use, kiosk-friendly." />
+  <meta name="description" content="One-Board Pilot helps hospital teams run a simple weekly routine: track Signals, choose one Action, stamp Proof Done, and capture 3–5 Weekly Wins. No PHI, fast to use, kiosk-friendly. BYOD optional." />
 
   <style>
     :root{
@@ -38,7 +38,7 @@
     *{box-sizing:border-box}
     html,body{height:100%}
 
-    /* Option A: navy base with subtle teal glow (moved from temp override) */
+    /* Navy base with subtle teal glow */
     body{
       margin:0;color:var(--ink);
       font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
@@ -49,11 +49,10 @@
     }
 
     .wrap{max-width:1100px;margin:0 auto;padding:16px}
-    header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:12px}
+    header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:8px}
     h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.3px}
     h2.kicker{margin:0 0 8px 0;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 
-    /* Lighter cards for contrast (from temp override) */
     .card{background:#0b1f35;border:1px solid var(--border-strong);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.25)}
 
     .grid{display:grid;gap:12px}
@@ -63,37 +62,33 @@
     }
 
     label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-    input[type="text"], input[type="date"], textarea{
+    input[type="text"], input[type="date"], textarea, select{
       width:100%;border:1px solid var(--border-strong);border-radius:10px;
       background:#0b1f35;color:var(--ink);padding:10px 12px
     }
-    input[type="text"]:focus, input[type="date"]:focus, textarea:focus{
+    input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus{
       outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(43,179,177,.25)
     }
     textarea{min-height:64px;resize:vertical}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-strong);
-      background:#0b1f35;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn{
+      display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border-strong);
+      background:#0b1f35;color:var(--ink);padding:10px 14px;border-radius:10px;cursor:pointer
+    }
     .btn:hover{border-color:#3a5575}
-
-    /* Lighter Median Method blue "Proof" button (from temp override) */
     .btn.good{
-     /* Teal Proof button (Median Method) */
-.btn.good{
-  background: linear-gradient(180deg, #36c9c7, #2bb3b1); /* light teal -> brand teal */
-  border-color: #1f8f8d; /* slightly darker teal border */
-  color: #ffffff;        /* text; switch to #0a1a2f if you prefer dark ink */
-  font-weight: 600;
-}
-.btn.good:hover{ filter: brightness(1.06); }
-.btn.good:active{ transform: translateY(1px); }
-.btn.good:focus-visible{
-  outline: 2px solid #ffffff;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(43,179,177,.40);
-}
-
+      background: linear-gradient(180deg, #36c9c7, #2bb3b1);
+      border-color: #1f8f8d;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .btn.good:hover{ filter: brightness(1.06); }
+    .btn.good:active{ transform: translateY(1px); }
+    .btn.good:focus-visible{
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 3px rgba(43,179,177,.40);
     }
 
     .btn.ghost{background:transparent;border-color:transparent;color:var(--ink)}
@@ -105,6 +100,12 @@
     footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
     button:disabled, input:disabled, textarea:disabled, select:disabled{opacity:.6; cursor:not-allowed}
 
+    /* Compliance banner */
+    .banner{
+      background:#fff3e0; color:#5a4300; border:1px solid #f6d090;
+      padding:8px 12px; border-radius:12px; font-size:12px; margin:6px 0 12px 0;
+    }
+
     /* Print-friendly one-pager */
     @media print{
       body{ background:#fff; color:#000; }
@@ -112,8 +113,8 @@
       header{ margin-bottom:8px; }
       .card{ background:#fff; border:1px solid #ccc; box-shadow:none; }
       .kicker{ color:#000 !important; }
-      input, textarea{ border:none; padding:0; background:#fff; color:#000; }
-      .btn, .pill, footer{ display:none !important; }
+      input, textarea, select{ border:none; padding:0; background:#fff; color:#000; }
+      .btn, .pill, .banner, footer{ display:none !important; }
       .grid, .grid-cols, .grid-low{ gap:8px; }
     }
   </style>
@@ -141,9 +142,17 @@
         <button class="btn ghost" id="importBtn" title="Load saved data">Import</button>
         <button class="btn ghost" id="clearBtn"  title="Erase local data on this device">Clear Data</button>
         <button class="btn ghost" id="lockBtn"  title="Lock/unlock kiosk">Lock</button>
+        <button class="btn" id="qrBtn"  title="Show phone QR (optional)">Show Phone QR (optional)</button>
+        <button class="btn" id="adminBtn" title="Open admin panel">Admin</button>
         <input id="filePick" type="file" accept="application/json" style="display:none">
       </div>
     </header>
+
+    <!-- Compliance / BYOD optional banner -->
+    <div class="banner">
+      Participation is <b>optional</b>. No PHI. Use this kiosk or a shared tablet. Phone use is a convenience option only.
+      Prefer a workstation? Use your internal link to open the same form.
+    </div>
 
     <!-- Weekly rhythm reminder -->
     <div class="pill" style="margin-bottom:10px;background:#0b1f35;border-color:var(--border-strong)">
@@ -156,16 +165,16 @@
         <h2 class="kicker">Signals — (3 short lines max)</h2>
         <div class="row">
           <div>
-            <label for="signal1">Communication</label>
+            <label for="signal1">Communication <span class="muted">(no PHI)</span></label>
             <input id="signal1" type="text" placeholder="e.g., Morning update late; add 8:30a post" />
           </div>
           <div>
-            <label for="signal2">Workload</label>
+            <label for="signal2">Workload <span class="muted">(no PHI)</span></label>
             <input id="signal2" type="text" placeholder="e.g., Add-ons spike 15:00–16:00" />
           </div>
         </div>
         <div style="margin-top:10px">
-          <label for="signal3">Teamwork</label>
+          <label for="signal3">Teamwork <span class="muted">(no PHI)</span></label>
           <input id="signal3" type="text" placeholder="e.g., 2-min handoff reduced misses" />
         </div>
       </section>
@@ -212,7 +221,7 @@
         <label for="topMinus" style="margin-top:10px;display:block">Top −1 (focus area)</label>
         <input id="topMinus" type="text" placeholder="e.g., Communication: morning update timing" />
         <label for="notes" style="margin-top:10px;display:block">Notes (optional)</label>
-        <textarea id="notes" placeholder="Any quick context for leaders or the team"></textarea>
+        <textarea id="notes" placeholder="Any quick context for leaders or the team (no PHI)"></textarea>
       </section>
     </div>
 
@@ -221,6 +230,96 @@
     </footer>
   </div>
 
+  <!-- QR Modal (BYOD optional) -->
+  <div id="qrModal" style="display:none;
+    position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.5);
+    align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#0b1f35; border:1px solid #274160; border-radius:16px; padding:16px; max-width:420px; width:100%;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <strong>Open on your phone (optional)</strong>
+        <button id="qrClose" class="btn">Close</button>
+      </div>
+      <p class="muted" style="margin:0 0 8px 0; font-size:12px;">
+        Scan with your camera. No PHI. Kiosk/shared tablet available if you prefer.
+      </p>
+      <div id="qrBox" style="display:grid; place-items:center; background:#fff; padding:12px; border-radius:12px;">
+        <!-- QR renders here -->
+      </div>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button id="copyLinkBtn" class="btn">Copy Link</button>
+        <button id="printPosterBtn" class="btn">Print Poster</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Overlay -->
+  <div id="adminModal" style="display:none;
+    position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.55);
+    align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#0b1f35; border:1px solid #274160; border-radius:16px; padding:16px; max-width:760px; width:100%;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <strong>Admin Panel</strong>
+        <button id="adminClose" class="btn">Close</button>
+      </div>
+
+      <!-- Auth strip -->
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
+        <span id="adminAuthState" class="muted" style="font-size:12px;">Mode: PIN</span>
+        <button id="adminSigninBtn" class="btn">Sign in (email link)</button>
+        <button id="adminSignoutBtn" class="btn" style="display:none;">Sign out</button>
+      </div>
+
+      <!-- PIN gate -->
+      <div id="adminGate" style="margin-bottom:12px;">
+        <label for="adminPIN" class="muted" style="font-size:12px;">Enter admin PIN to edit (demo: 1234)</label>
+        <div style="display:flex; gap:8px; margin-top:6px;">
+          <input id="adminPIN" inputmode="numeric" placeholder="PIN" style="max-width:160px;">
+          <button id="adminUnlock" class="btn">Unlock</button>
+        </div>
+      </div>
+
+      <!-- Admin content -->
+      <div id="adminContent" style="display:none;">
+        <div class="grid" style="grid-template-columns:1fr 1fr; gap:12px;">
+          <!-- Announcements -->
+          <section class="card">
+            <h2 class="kicker">Announcements</h2>
+            <div id="adminAnnouncements"></div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <input id="annTitle" type="text" placeholder="Title">
+              <input id="annUntil" type="text" placeholder="Until (e.g., Oct 31)">
+              <button id="annAdd" class="btn good">Add</button>
+            </div>
+          </section>
+
+          <!-- Change Pipeline -->
+          <section class="card">
+            <h2 class="kicker">Change Pipeline (phase)</h2>
+            <div id="adminExperiments"></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:8px;">
+              <input id="expTitle" type="text" placeholder="Experiment title">
+              <select id="expPhase">
+                <option>Measure</option><option>Engage</option><option>Diagnose</option>
+                <option>Implement</option><option>Align</option><option>Normalize</option>
+              </select>
+              <button id="expAdd" class="btn good">Add</button>
+            </div>
+          </section>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <h2 class="kicker">Weekly Snapshot (cloud save)</h2>
+          <p class="muted" style="font-size:12px; margin-top:-2px;">Saves to Supabase if configured, otherwise locally only.</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="snapshotBtn" class="btn">Save Weekly Snapshot</button>
+            <span id="snapshotStatus" class="muted" style="align-self:center;"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main app logic -->
   <script>
   (function(){
     const $ = id => document.getElementById(id);
@@ -269,6 +368,12 @@
       const stamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       $('proofStamp').textContent = 'DONE — ' + stamp;
       save();
+
+      // Notify cloud saver (defined later if Supabase configured)
+      if (window.oneboardCloudSaveProof) {
+        const week = $('weekOf')?.value || null;
+        window.oneboardCloudSaveProof({ week_of: week, proof_stamp: 'DONE — ' + stamp });
+      }
     }
 
     // === Weekly Update copy + fairness nudge ===
@@ -351,7 +456,7 @@
       localStorage.setItem('one-board-locked', flag ? '1' : '0');
       const ctrls = document.querySelectorAll('input, textarea, button, select');
       ctrls.forEach(el=>{
-        if(['lockBtn','printBtn','shareBtn'].includes(el.id)) return;
+        if(['lockBtn','printBtn','shareBtn','qrBtn','adminBtn'].includes(el.id)) return;
         el.disabled = flag;
       });
       $('lockBtn').textContent = flag ? 'Unlock' : 'Lock';
@@ -399,74 +504,294 @@
     setLocked(LOCKED);
   })();
   </script>
-<!-- Supabase init: paste this block directly above </body> -->
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-  // ⬇️ paste YOUR values from Settings → API
-  const SUPABASE_URL = https://munxfprhqdpnrchzxdtj.supabase.co
-  const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11bnhmcHJocWRwbnJjaHp4ZHRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxOTIzOTcsImV4cCI6MjA3NTc2ODM5N30.L0o3YhHlS7fEGob2S9kgdMn41RTCzVhjb4JtZs730Pg
+  <!-- Lightweight QR generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
-  // Make it available to other scripts if needed:
-  window.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-</script>
-<!-- ⬇️ DROP-IN AUTH BAR (paste directly above </body>) -->
-<div id="authBar" style="position:fixed;top:10px;right:10px;z-index:1000;
-  display:flex;gap:8px;align-items:center;background:#fff;border:1px solid #e5e7eb;
-  padding:8px 10px;border-radius:999px;font-family:ui-sans-serif,system-ui;">
-  <span id="rolePill" style="font-size:12px;color:#6b7280">signed out</span>
-  <button id="signinBtn" style="border:1px solid #e5e7eb;padding:6px 10px;border-radius:999px;cursor:pointer;">Sign in</button>
-  <button id="signoutBtn" style="display:none;border:1px solid #e5e7eb;padding:6px 10px;border-radius:999px;cursor:pointer;background:#f9fafb;">Sign out</button>
-</div>
+  <!-- QR + Admin + Supabase integrations -->
+  <script>
+  (function(){
+    /* ========= QR ========= */
+    const qrBtn = document.getElementById('qrBtn');
+    const qrModal = document.getElementById('qrModal');
+    const qrClose = document.getElementById('qrClose');
+    const qrBox = document.getElementById('qrBox');
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    const printPosterBtn = document.getElementById('printPosterBtn');
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+    const qrUrl = window.location.origin + window.location.pathname; // stable kiosk URL
+    let qr;
 
-  // 🔑 Replace with your real values from Supabase → Settings → API
-  const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co'
-  const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY'
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  window.supabase = supabase // optional: expose for other scripts
-
-  // UI elements
-  const signinBtn  = document.getElementById('signinBtn')
-  const signoutBtn = document.getElementById('signoutBtn')
-  const rolePill   = document.getElementById('rolePill')
-
-  function paint(authSession) {
-    if (authSession) {
-      signinBtn.style.display = 'none'
-      signoutBtn.style.display = 'inline-block'
-      rolePill.textContent = authSession.user.email || 'signed in'
-    } else {
-      signinBtn.style.display = 'inline-block'
-      signoutBtn.style.display = 'none'
-      rolePill.textContent = 'signed out'
+    function openQr() {
+      qrModal.style.display = 'flex';
+      qrBox.innerHTML = '';
+      qr = new QRCode(qrBox, { text: qrUrl, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.M });
     }
-  }
+    function closeQr() { qrModal.style.display = 'none'; qrBox.innerHTML = ''; qr = null; }
+    function copyLink() {
+      navigator.clipboard.writeText(qrUrl)
+        .then(()=>alert('Link copied. You can paste into Slack/Teams or create a poster.'))
+        .catch(()=>alert('Copy failed. You can still scan the QR.'));
+    }
+    function printPoster() {
+      const win = window.open('', '_blank', 'width=420,height=600');
+      const posterHtml = `
+        <html><head><title>One-Board QR Poster</title>
+        <meta name="robots" content="noindex,nofollow">
+        <style>
+          body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+          .wrap { max-width: 5in; margin: 20px auto; text-align: center; }
+          .box { background:#fff; padding:16px; border:1px solid #ddd; border-radius:12px; display:inline-block; }
+          h1 { font-size:18px; margin-bottom:6px; }
+          p { font-size:12px; color:#444; margin-top:6px; }
+          @media print { .hint { display:none; } }
+        </style></head>
+        <body>
+          <div class="wrap">
+            <h1>Open One-Board on your phone</h1>
+            <div id="posterQr" class="box"></div>
+            <p>No PHI. Using a personal phone is optional — kiosk/shared tablet available.</p>
+            <p class="hint">Tip: test the QR with your camera before posting.</p>
+          </div>
+          <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"><\/script>
+          <script>
+            new QRCode(document.getElementById('posterQr'), { text:${JSON.stringify(qrUrl)}, width:240,height:240,
+              correctLevel: QRCode.CorrectLevel.M });
+            window.print();
+          <\/script>
+        </body></html>`;
+      win.document.write(posterHtml); win.document.close();
+    }
 
-  // Initial session + listener
-  const { data: initial } = await supabase.auth.getSession()
-  paint(initial.session)
+    qrBtn?.addEventListener('click', openQr);
+    qrClose?.addEventListener('click', closeQr);
+    qrModal?.addEventListener('click', (e)=>{ if(e.target === qrModal) closeQr(); });
+    copyLinkBtn?.addEventListener('click', copyLink);
+    printPosterBtn?.addEventListener('click', printPoster);
 
-  supabase.auth.onAuthStateChange((_event, session) => paint(session))
+    /* ========= Admin Overlay (PIN + optional SSO) ========= */
+    const adminBtn = document.getElementById('adminBtn');
+    const adminModal = document.getElementById('adminModal');
+    const adminClose = document.getElementById('adminClose');
+    const adminGate = document.getElementById('adminGate');
+    const adminContent = document.getElementById('adminContent');
+    const adminPIN = document.getElementById('adminPIN');
+    const adminUnlock = document.getElementById('adminUnlock');
+    const adminAuthState = document.getElementById('adminAuthState');
+    const adminSigninBtn = document.getElementById('adminSigninBtn');
+    const adminSignoutBtn = document.getElementById('adminSignoutBtn');
 
-  // Actions
-  signinBtn.onclick = async () => {
-    const email = prompt('Enter your work email for a magic link:')
-    if (!email) return
-    // Redirect back to your current page; Auth → URL Configuration should also have your Site URL set
-    const emailRedirectTo = window.location.origin + window.location.pathname
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo } })
-    if (error) alert(error.message); else alert('Check your email for the sign-in link.')
-  }
+    // Data containers in admin UI
+    const adminAnnouncements = document.getElementById('adminAnnouncements');
+    const annTitle = document.getElementById('annTitle');
+    const annUntil = document.getElementById('annUntil');
+    const annAdd = document.getElementById('annAdd');
 
-  signoutBtn.onclick = async () => {
-    await supabase.auth.signOut()
-  }
-</script>
-<!-- ⬆️ END DROP-IN AUTH BAR -->
+    const adminExperiments = document.getElementById('adminExperiments');
+    const expTitle = document.getElementById('expTitle');
+    const expPhase = document.getElementById('expPhase');
+    const expAdd = document.getElementById('expAdd');
 
+    // Local storage lists for admin (could be synced to Supabase later)
+    let ANN = JSON.parse(localStorage.getItem('oneboard-announcements') || '[]');
+    let EXP = JSON.parse(localStorage.getItem('oneboard-experiments') || '[]');
+
+    function paintAnnouncements() {
+      adminAnnouncements.innerHTML = '';
+      ANN.forEach((a, i) => {
+        const row = document.createElement('div');
+        row.className = 'stack';
+        row.style.justifyContent = 'space-between';
+        row.innerHTML = `
+          <div>${a.title} <span class="muted">(${a.until||''})</span></div>
+          <div class="stack">
+            <button class="btn" data-i="${i}" data-act="edit">Edit</button>
+            <button class="btn" data-i="${i}" data-act="del">Delete</button>
+          </div>`;
+        adminAnnouncements.appendChild(row);
+      });
+    }
+    function paintExperiments() {
+      adminExperiments.innerHTML = '';
+      EXP.forEach((e, i) => {
+        const row = document.createElement('div');
+        row.className = 'stack';
+        row.style.justifyContent = 'space-between';
+        row.innerHTML = `
+          <div>${e.title} <span class="pill">${e.phase}</span></div>
+          <div class="stack">
+            <select data-i="${i}" data-act="phase">
+              <option ${e.phase==='Measure'?'selected':''}>Measure</option>
+              <option ${e.phase==='Engage'?'selected':''}>Engage</option>
+              <option ${e.phase==='Diagnose'?'selected':''}>Diagnose</option>
+              <option ${e.phase==='Implement'?'selected':''}>Implement</option>
+              <option ${e.phase==='Align'?'selected':''}>Align</option>
+              <option ${e.phase==='Normalize'?'selected':''}>Normalize</option>
+            </select>
+            <button class="btn" data-i="${i}" data-act="del">Delete</button>
+          </div>`;
+        adminExperiments.appendChild(row);
+      });
+    }
+    function saveAdminLocal(){
+      localStorage.setItem('oneboard-announcements', JSON.stringify(ANN));
+      localStorage.setItem('oneboard-experiments', JSON.stringify(EXP));
+    }
+
+    function openAdmin(){
+      adminModal.style.display = 'flex';
+      paintAnnouncements(); paintExperiments();
+      adminAuthState.textContent = window.supabase ? 'Mode: PIN + SSO (Supabase available)' : 'Mode: PIN';
+    }
+    function closeAdmin(){ adminModal.style.display = 'none'; }
+
+    adminBtn?.addEventListener('click', openAdmin);
+    adminClose?.addEventListener('click', closeAdmin);
+    adminModal?.addEventListener('click', (e)=>{ if(e.target === adminModal) closeAdmin(); });
+
+    // PIN gate (demo PIN 1234)
+    function unlockAdmin(){
+      if (adminPIN.value === '1234') {
+        adminGate.style.display = 'none';
+        adminContent.style.display = 'block';
+      } else { alert('Wrong PIN'); }
+    }
+    adminUnlock?.addEventListener('click', unlockAdmin);
+
+    // Optional SSO (email magic link) if Supabase configured
+    adminSigninBtn?.addEventListener('click', async ()=>{
+      if (!window.supabase){ alert('SSO not configured. Using PIN mode.'); return; }
+      const email = prompt('Enter your work email for a magic link:');
+      if (!email) return;
+      const emailRedirectTo = window.location.origin + window.location.pathname;
+      const { error } = await window.supabase.auth.signInWithOtp({ email, options: { emailRedirectTo } });
+      if (error) alert(error.message); else alert('Check your email for the sign-in link.');
+    });
+    adminSignoutBtn?.addEventListener('click', async ()=>{
+      if (!window.supabase) return;
+      await window.supabase.auth.signOut();
+      alert('Signed out.');
+    });
+    (async function watchAuth(){
+      if (!window.supabase) return;
+      const { data: init } = await window.supabase.auth.getSession();
+      adminSigninBtn.style.display = init.session ? 'none' : 'inline-flex';
+      adminSignoutBtn.style.display = init.session ? 'inline-flex' : 'none';
+      window.supabase.auth.onAuthStateChange((_e, s)=>{
+        adminSigninBtn.style.display = s ? 'none' : 'inline-flex';
+        adminSignoutBtn.style.display = s ? 'inline-flex' : 'none';
+      });
+    })();
+
+    // Admin: add/edit/delete announcements
+    annAdd?.addEventListener('click', ()=> {
+      if (!annTitle.value.trim()) return;
+      ANN.push({ title: annTitle.value.trim(), until: annUntil.value.trim() });
+      annTitle.value=''; annUntil.value='';
+      saveAdminLocal(); paintAnnouncements();
+      // TODO: optionally sync to Supabase table `announcements`
+    });
+    adminAnnouncements?.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button'); if(!btn) return;
+      const i = +btn.dataset.i;
+      const act = btn.dataset.act;
+      if (act === 'del'){ ANN.splice(i,1); saveAdminLocal(); paintAnnouncements(); }
+      if (act === 'edit'){
+        const t = prompt('Title', ANN[i].title) ?? ANN[i].title;
+        const u = prompt('Until', ANN[i].until || '') ?? ANN[i].until;
+        ANN[i] = { title: t.trim(), until: (u||'').trim() };
+        saveAdminLocal(); paintAnnouncements();
+      }
+    });
+
+    // Admin: add/edit/delete experiments
+    expAdd?.addEventListener('click', ()=> {
+      if (!expTitle.value.trim()) return;
+      EXP.push({ title: expTitle.value.trim(), phase: expPhase.value });
+      expTitle.value=''; expPhase.value='Measure';
+      saveAdminLocal(); paintExperiments();
+      // TODO: optionally sync to Supabase table `experiments`
+    });
+    adminExperiments?.addEventListener('change', (e)=>{
+      const sel = e.target.closest('select'); if(!sel) return;
+      const i = +sel.dataset.i; EXP[i].phase = sel.value;
+      saveAdminLocal(); paintExperiments();
+    });
+    adminExperiments?.addEventListener('click', (e)=>{
+      const btn = e.target.closest('button'); if(!btn) return;
+      const i = +btn.dataset.i; const act = btn.dataset.act;
+      if (act==='del'){ EXP.splice(i,1); saveAdminLocal(); paintExperiments(); }
+    });
+
+    /* ========= Supabase saves (Proof + Snapshot) ========= */
+    // Helper to safely call Supabase if configured
+    async function sbInsert(table, row){
+      if (!window.supabase) return { error: new Error('Supabase not configured') };
+      try {
+        // Attach created_by if user signed in
+        const { data: sess } = await window.supabase.auth.getSession();
+        const created_by = sess?.session?.user?.id || null;
+        const payload = Object.assign({}, row, { created_by });
+        const { data, error } = await window.supabase.from(table).insert(payload).select();
+        return { data, error };
+      } catch (e){ return { error: e }; }
+    }
+
+    // Expose a hook the main script calls after stamping proof
+    window.oneboardCloudSaveProof = async ({ week_of, proof_stamp }) => {
+      await sbInsert('proof_events', { week_of, proof_stamp, saved_at: new Date().toISOString() });
+    };
+
+    // Admin: Save Weekly Snapshot button
+    const snapshotBtn = document.getElementById('snapshotBtn');
+    const snapshotStatus = document.getElementById('snapshotStatus');
+    function getVal(id){ return (document.getElementById(id)?.value || '').trim(); }
+
+    snapshotBtn?.addEventListener('click', async ()=>{
+      const snapshot = {
+        week_of: getVal('weekOf') || null,
+        scribe: document.getElementById('scribe')?.value || null,
+        signals: [getVal('signal1'), getVal('signal2'), getVal('signal3')].filter(Boolean),
+        one_action: getVal('oneAction'),
+        owner: getVal('owner'),
+        start: getVal('start') || null,
+        wins: [getVal('win1'), getVal('win2'), getVal('win3'), getVal('win4'), getVal('win5')].filter(Boolean),
+        top_plus: getVal('topPlus'),
+        top_minus: getVal('topMinus'),
+        notes: getVal('notes'),
+        announcements: ANN,
+        experiments: EXP,
+        saved_at: new Date().toISOString()
+      };
+
+      // Local fallback
+      const LOCAL_KEY = 'oneboard-snapshots';
+      const list = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
+      list.push(snapshot);
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(list));
+
+      // Cloud attempt
+      const { error } = await sbInsert('weekly_snapshots', snapshot);
+      snapshotStatus.textContent = error ? 'Saved locally (cloud not configured).' : 'Saved to cloud.';
+      setTimeout(()=> snapshotStatus.textContent = '', 3000);
+    });
+
+    // Open/close admin
+    adminSigninBtn?.addEventListener('click', ()=>{}); // wired above
+  })();
+  </script>
+
+  <!-- Supabase init (optional). Keep anon key public ONLY; never expose service_role on the client. -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+    // Fill in if/when you want cloud saves + SSO:
+    const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';   /* QUOTED placeholder */
+    const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';                 /* QUOTED placeholder */
+
+    if (!SUPABASE_URL.startsWith('https://YOUR-')) {
+      window.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  </script>
 </body>
 </html>
