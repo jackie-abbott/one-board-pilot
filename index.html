@@ -100,10 +100,15 @@
     footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
     button:disabled, input:disabled, textarea:disabled, select:disabled{opacity:.6; cursor:not-allowed}
 
-    /* Compliance banner */
+    /* Compliance banner (smaller; implies phone optional) */
     .banner{
-      background:#fff3e0; color:#5a4300; border:1px solid #f6d090;
-      padding:8px 12px; border-radius:12px; font-size:12px; margin:6px 0 12px 0;
+      background:#fff3e0; 
+      color:#5a4300; 
+      border:1px solid #f6d090;
+      padding:6px 10px;           /* smaller */
+      border-radius:10px;         /* smaller */
+      font-size:11px;             /* smaller */
+      margin:4px 0 10px 0;        /* tighter */
     }
 
     /* Print-friendly one-pager */
@@ -148,9 +153,9 @@
       </div>
     </header>
 
-    <!-- Compliance / BYOD optional banner -->
+    <!-- Compliance / phone optional banner -->
     <div class="banner">
-      Participation is <b>optional</b>. No PHI. Use this kiosk or a shared tablet. Phone use is a convenience option only.
+      No PHI. Use this kiosk or a shared tablet. Using a personal phone is optional.
       Prefer a workstation? Use your internal link to open the same form.
     </div>
 
@@ -240,7 +245,7 @@
         <button id="qrClose" class="btn">Close</button>
       </div>
       <p class="muted" style="margin:0 0 8px 0; font-size:12px;">
-        Scan with your camera. No PHI. Kiosk/shared tablet available if you prefer.
+        No PHI. You can scan with your phone (optional), or use the kiosk/shared tablet.
       </p>
       <div id="qrBox" style="display:grid; place-items:center; background:#fff; padding:12px; border-radius:12px;">
         <!-- QR renders here -->
@@ -775,9 +780,6 @@
       snapshotStatus.textContent = error ? 'Saved locally (cloud not configured).' : 'Saved to cloud.';
       setTimeout(()=> snapshotStatus.textContent = '', 3000);
     });
-
-    // Open/close admin
-    adminSigninBtn?.addEventListener('click', ()=>{}); // wired above
   })();
   </script>
 
@@ -785,7 +787,7 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-    // Fill in if/when you want cloud saves + SSO:
+    // Fill in when you're ready to connect:
     const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';   /* QUOTED placeholder */
     const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';                 /* QUOTED placeholder */
 
