@@ -3,42 +3,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Keep this so search engines don’t index while you test -->
   <meta name="robots" content="noindex,nofollow">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#0a1a2f"><!-- matches navy background -->
+  <meta name="theme-color" content="#0a1a2f">
 
-  <!-- Service worker -->
   <script>
     if ("serviceWorker" in navigator) {
       addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js"));
     }
   </script>
 
-  <!-- Favicons -->
   <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
 
   <title>One-Board Pilot</title>
-  <meta name="description" content="One-Board Pilot helps hospital teams run a simple weekly routine: track Signals, choose one Action, stamp Proof Done, and capture 3–5 Weekly Wins. No PHI, fast to use, kiosk-friendly. BYOD optional." />
+  <meta name="description" content="One-Board Pilot: Signals → One Action → Proof → Weekly Wins. No PHI, kiosk-friendly, BYOD optional." />
 
   <style>
     :root{
-      --bg:#0a1a2f;         /* deep navy */
-      --card:#0f2138;       /* navy-slate card */
-      --ink:#e6f0ff;        /* very light ink */
-      --muted:#c7d5e5;      /* cool slate text */
-      --accent:#2bb3b1;     /* teal (primary) */
-      --accent-2:#2a91b1;   /* blue-teal (secondary) */
-      --warn:#f59e0b;       /* amber */
-      --danger:#dc2626;     /* red */
-      --border:#1f2f46;     /* dark border */
-      --border-strong:#274160;/* stronger border */
+      --bg:#0a1a2f; --card:#0f2138; --ink:#e6f0ff; --muted:#c7d5e5;
+      --accent:#2bb3b1; --accent-2:#2a91b1; --warn:#f59e0b; --danger:#dc2626;
+      --border:#1f2f46; --border-strong:#274160;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-
-    /* Navy base with subtle teal glow */
     body{
       margin:0;color:var(--ink);
       font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
@@ -86,8 +74,7 @@
     .btn.good:hover{ filter: brightness(1.06); }
     .btn.good:active{ transform: translateY(1px); }
     .btn.good:focus-visible{
-      outline: 2px solid #ffffff;
-      outline-offset: 2px;
+      outline: 2px solid #ffffff; outline-offset: 2px;
       box-shadow: 0 0 0 3px rgba(43,179,177,.40);
     }
 
@@ -100,18 +87,17 @@
     footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
     button:disabled, input:disabled, textarea:disabled, select:disabled{opacity:.6; cursor:not-allowed}
 
-    /* Compliance banner (smaller; implies phone optional) */
+    /* Small banner; implies phone optional */
     .banner{
-      background:#fff3e0; 
-      color:#5a4300; 
-      border:1px solid #f6d090;
-      padding:6px 10px;           /* smaller */
-      border-radius:10px;         /* smaller */
-      font-size:11px;             /* smaller */
-      margin:4px 0 10px 0;        /* tighter */
+      background:#fff3e0;color:#5a4300;border:1px solid #f6d090;
+      padding:6px 10px;border-radius:10px;font-size:11px;margin:4px 0 10px 0;
     }
 
-    /* Print-friendly one-pager */
+    /* Phone mode helpers */
+    :root[data-phone="1"] .hide-phone{display:none !important;}
+    :root[data-phone="1"] input, :root[data-phone="1"] textarea, :root[data-phone="1"] select{font-size:18px;padding:12px 14px}
+
+    /* Print-friendly */
     @media print{
       body{ background:#fff; color:#000; }
       .wrap{ max-width:7.5in; }
@@ -132,40 +118,33 @@
         <span class="pill">Week of <input id="weekOf" type="date" aria-label="Week Of" /></span>
         <span class="pill">Scribe today
           <select id="scribe" aria-label="Scribe today">
-            <option>Charge AM</option>
-            <option>Charge PM</option>
-            <option>Room 1</option>
-            <option>Room 2</option>
-            <option>Float</option>
+            <option>Charge AM</option><option>Charge PM</option><option>Room 1</option><option>Room 2</option><option>Float</option>
           </select>
         </span>
         <button class="btn" id="copyBtn"  title="Copy a ready-to-paste weekly update">Copy Weekly Update</button>
         <button class="btn ghost" id="resetBtn" title="Clear everything for a fresh week">Reset Week</button>
-        <button class="btn" id="printBtn" title="Print a one-page poster">Print Poster</button>
+        <button class="btn hide-phone" id="printBtn" title="Print a one-page poster">Print Poster</button>
         <button class="btn" id="shareBtn" title="Share or copy the link">Share Link</button>
         <button class="btn" id="exportBtn" title="Download current week data">Export</button>
         <button class="btn ghost" id="importBtn" title="Load saved data">Import</button>
-        <button class="btn ghost" id="clearBtn"  title="Erase local data on this device">Clear Data</button>
-        <button class="btn ghost" id="lockBtn"  title="Lock/unlock kiosk">Lock</button>
+        <button class="btn ghost hide-phone" id="clearBtn"  title="Erase local data on this device">Clear Data</button>
+        <button class="btn ghost hide-phone" id="lockBtn"  title="Lock/unlock kiosk">Lock</button>
         <button class="btn" id="qrBtn"  title="Show phone QR (optional)">Show Phone QR (optional)</button>
-        <button class="btn" id="adminBtn" title="Open admin panel">Admin</button>
+        <button class="btn hide-phone" id="adminBtn" title="Open admin panel">Admin</button>
         <input id="filePick" type="file" accept="application/json" style="display:none">
       </div>
     </header>
 
-    <!-- Compliance / phone optional banner -->
     <div class="banner">
       No PHI. Use this kiosk or a shared tablet. Using a personal phone is optional.
       Prefer a workstation? Use your internal link to open the same form.
     </div>
 
-    <!-- Weekly rhythm reminder -->
     <div class="pill" style="margin-bottom:10px;background:#0b1f35;border-color:var(--border-strong)">
       Mon: set One Action • All week: add Signals • Fri: 3–5 wins, stamp Proof, post & print
     </div>
 
     <div class="grid grid-cols">
-      <!-- Left column -->
       <section class="card">
         <h2 class="kicker">Signals — (3 short lines max)</h2>
         <div class="row">
@@ -184,7 +163,6 @@
         </div>
       </section>
 
-      <!-- Right column -->
       <section class="card">
         <h2 class="kicker">This Week’s One Action</h2>
         <label for="oneAction">We’re trying</label>
@@ -236,20 +214,14 @@
   </div>
 
   <!-- QR Modal (BYOD optional) -->
-  <div id="qrModal" style="display:none;
-    position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.5);
-    align-items:center; justify-content:center; padding:16px;">
+  <div id="qrModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.5); align-items:center; justify-content:center; padding:16px;">
     <div style="background:#0b1f35; border:1px solid #274160; border-radius:16px; padding:16px; max-width:420px; width:100%;">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
         <strong>Open on your phone (optional)</strong>
         <button id="qrClose" class="btn">Close</button>
       </div>
-      <p class="muted" style="margin:0 0 8px 0; font-size:12px;">
-        No PHI. You can scan with your phone (optional), or use the kiosk/shared tablet.
-      </p>
-      <div id="qrBox" style="display:grid; place-items:center; background:#fff; padding:12px; border-radius:12px;">
-        <!-- QR renders here -->
-      </div>
+      <p class="muted" style="margin:0 0 8px 0; font-size:12px;">No PHI. You can scan with your phone (optional), or use the kiosk/shared tablet.</p>
+      <div id="qrBox" style="display:grid; place-items:center; background:#fff; padding:12px; border-radius:12px;"></div>
       <div style="display:flex; gap:8px; margin-top:10px;">
         <button id="copyLinkBtn" class="btn">Copy Link</button>
         <button id="printPosterBtn" class="btn">Print Poster</button>
@@ -258,23 +230,19 @@
   </div>
 
   <!-- Admin Overlay -->
-  <div id="adminModal" style="display:none;
-    position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.55);
-    align-items:center; justify-content:center; padding:16px;">
+  <div id="adminModal" class="hide-phone" style="display:none; position:fixed; inset:0; z-index:1100; background:rgba(0,0,0,.55); align-items:center; justify-content:center; padding:16px;">
     <div style="background:#0b1f35; border:1px solid #274160; border-radius:16px; padding:16px; max-width:760px; width:100%;">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
         <strong>Admin Panel</strong>
         <button id="adminClose" class="btn">Close</button>
       </div>
 
-      <!-- Auth strip -->
       <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px;">
         <span id="adminAuthState" class="muted" style="font-size:12px;">Mode: PIN</span>
         <button id="adminSigninBtn" class="btn">Sign in (email link)</button>
         <button id="adminSignoutBtn" class="btn" style="display:none;">Sign out</button>
       </div>
 
-      <!-- PIN gate -->
       <div id="adminGate" style="margin-bottom:12px;">
         <label for="adminPIN" class="muted" style="font-size:12px;">Enter admin PIN to edit (demo: 1234)</label>
         <div style="display:flex; gap:8px; margin-top:6px;">
@@ -283,10 +251,8 @@
         </div>
       </div>
 
-      <!-- Admin content -->
       <div id="adminContent" style="display:none;">
         <div class="grid" style="grid-template-columns:1fr 1fr; gap:12px;">
-          <!-- Announcements -->
           <section class="card">
             <h2 class="kicker">Announcements</h2>
             <div id="adminAnnouncements"></div>
@@ -297,7 +263,6 @@
             </div>
           </section>
 
-          <!-- Change Pipeline -->
           <section class="card">
             <h2 class="kicker">Change Pipeline (phase)</h2>
             <div id="adminExperiments"></div>
@@ -328,22 +293,60 @@
   <script>
   (function(){
     const $ = id => document.getElementById(id);
-    const ids = [
-      'weekOf','scribe','signal1','signal2','signal3','oneAction','owner','start',
-      'win1','win2','win3','win4','win5','topPlus','topMinus','notes'
-    ];
+    const ids = ['weekOf','scribe','signal1','signal2','signal3','oneAction','owner','start','win1','win2','win3','win4','win5','topPlus','topMinus','notes'];
     const KEY = 'one-board-pilot-v1';
 
-    // === Fairness memory for Weekly Wins ===
-    function recentNames(){
-      try { return JSON.parse(localStorage.getItem('wins-names')) || []; }
-      catch(e){ return []; }
-    }
-    function saveNames(list){
-      localStorage.setItem('wins-names', JSON.stringify(list.slice(-14)));
-    }
+    /* Auto 'Week of' to most recent Monday if blank */
+    (function setWeekToMonday(){
+      const inp = $('weekOf'); if(!inp || inp.value) return;
+      const d = new Date(), day = d.getDay(); // 0=Sun
+      const diff = (day === 0 ? -6 : 1 - day);
+      d.setDate(d.getDate() + diff);
+      inp.value = d.toISOString().slice(0,10);
+    })();
 
-    // === Load / Save ===
+    /* Soft PHI guard (warn on blur; no blocking) */
+    (function phiGuard(){
+      const watch = ['signal1','signal2','signal3','win1','win2','win3','win4','win5','notes'];
+      const PHI = /\b(\d{3}-\d{2}-\d{4}|\d{9}|\d{3}[-.\s]?\d{3}[-.\s]?\d{4}|dob|mrn|ssn)\b/i;
+      watch.forEach(id=>{
+        const el = $(id); if(!el) return;
+        el.addEventListener('blur', ()=>{ if(PHI.test(el.value)) alert('Heads up: this looks like PHI (e.g., MRN/DOB/phone). Please remove or generalize.'); });
+      });
+    })();
+
+    /* Phone Mode layout (?mode=phone) */
+    (function phoneMode(){
+      const phone = new URLSearchParams(location.search).get('mode') === 'phone';
+      if(!phone) return;
+      document.documentElement.setAttribute('data-phone','1');
+      ['printBtn','lockBtn','adminBtn'].forEach(id=>{ const n=$(id); if(n) n.style.display='none'; });
+    })();
+
+    /* Ambient idle screen (60s) */
+    (function ambient(){
+      let t; const idle = 60000;
+      const ambient = document.createElement('div');
+      ambient.style.cssText='display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.8);color:#fff;'
+        +'font:18px/1.4 system-ui;align-items:center;justify-content:center;';
+      ambient.innerHTML = '<div style="max-width:800px;text-align:center;padding:24px;">'
+        +'<h2 style="margin:0 0 8px 0">This week on One-Board</h2>'
+        +'<div id="ambientBody" style="opacity:.9">Team wins & live KPIs rotate here…</div>'
+        +'<div style="margin-top:12px;font-size:12px;opacity:.7">Tap to edit</div></div>';
+      document.body.appendChild(ambient);
+      function show(){ ambient.style.display='flex'; }
+      function hide(){ ambient.style.display='none'; }
+      function reset(){ hide(); clearTimeout(t); t=setTimeout(show,idle); }
+      ['mousemove','keydown','touchstart','click'].forEach(e=>addEventListener(e, reset, {passive:true}));
+      reset();
+      ambient.addEventListener('click', hide);
+    })();
+
+    /* Fairness memory for Weekly Wins */
+    function recentNames(){ try { return JSON.parse(localStorage.getItem('wins-names')) || []; } catch(e){ return []; } }
+    function saveNames(list){ localStorage.setItem('wins-names', JSON.stringify(list.slice(-14))); }
+
+    /* Load/Save */
     function load(){
       try{
         const raw = localStorage.getItem(KEY);
@@ -360,41 +363,35 @@
       try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ console.warn('Save failed', e); }
     }
 
-    // === Reset & Proof ===
+    /* Reset & Proof */
     function resetWeek(){
       if(!confirm('Clear all fields for a fresh week?')) return;
       ids.forEach(id=> { if($(id)) $(id).value = ''; });
       $('proofStamp').textContent='';
-      save();
-      updateEquityMeter();
+      save(); updateEquityMeter();
     }
     function stampProof(){
       const now = new Date();
       const stamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       $('proofStamp').textContent = 'DONE — ' + stamp;
       save();
-
-      // Notify cloud saver (defined later if Supabase configured)
       if (window.oneboardCloudSaveProof) {
         const week = $('weekOf')?.value || null;
         window.oneboardCloudSaveProof({ week_of: week, proof_stamp: 'DONE — ' + stamp });
       }
     }
 
-    // === Weekly Update copy + fairness nudge ===
+    /* Copy Weekly + fairness nudge */
     function copyWeekly(){
       const week = $('weekOf').value || '(set week)';
       const tp = $('topPlus').value; const tm = $('topMinus').value;
       const act = $('oneAction').value; const owner = $('owner').value; const start = $('start').value;
       const wins = [1,2,3,4,5].map(n => $('win'+n).value).filter(Boolean).slice(0,5);
 
-      // fairness nudge
       const names = wins.map(w => (w.match(/@(\S+)/)||[])[1]).filter(Boolean);
       const last = recentNames();
       const repeats = names.filter(n => last.includes(n));
-      if (repeats.length){
-        alert('Heads up: recent repeat(s): ' + [...new Set(repeats)].map(n=>'@'+n).join(', '));
-      }
+      if (repeats.length){ alert('Heads up: recent repeat(s): ' + [...new Set(repeats)].map(n=>'@'+n).join(', ')); }
       saveNames(last.concat(names));
 
       const lines = [];
@@ -405,8 +402,7 @@
         lines.push(`One action (this week): ${act}` + (owner?` (owner: ${owner}`:'') + (start?`, starts: ${start}`:'') + (owner||start?')':''));
       }
       if(wins.length){
-        lines.push('');
-        lines.push('Weekly Wins');
+        lines.push('', 'Weekly Wins');
         wins.forEach(w=> lines.push(`• ${w}`));
       }
       const txt = lines.join('\n');
@@ -416,11 +412,10 @@
       }).catch(()=>{
         alert('Copy failed — your browser may block clipboard writes. You can still select & copy manually.');
       });
-
       updateEquityMeter();
     }
 
-    // === Equity meter ===
+    /* Equity meter */
     function updateEquityMeter(){
       const wins = [1,2,3,4,5].map(n => $('win'+n).value).filter(Boolean);
       const names = wins.map(w => (w.match(/@(\S+)/)||[])[1]).filter(Boolean);
@@ -428,7 +423,7 @@
       $('equityMeter').textContent = wins.length ? `Recognition equity: ${uniq} unique name(s) this week` : '';
     }
 
-    // === Export / Import / Clear ===
+    /* Export / Import / Clear */
     function exportData(){
       const raw = localStorage.getItem(KEY) || "{}";
       const blob = new Blob([raw], {type:"application/json"});
@@ -442,23 +437,19 @@
       const f = e.target.files[0]; if(!f) return;
       const r = new FileReader();
       r.onload = () => { try { localStorage.setItem(KEY, r.result); load(); updateEquityMeter(); } catch(e){ alert('Import failed (bad file)'); } };
-      r.readAsText(f);
-      e.target.value = '';
+      r.readAsText(f); e.target.value = '';
     });
     function clearData(){
       if(confirm('Erase local data on this device?')){
-        localStorage.removeItem(KEY);
-        localStorage.removeItem('wins-names');
-        location.reload();
+        localStorage.removeItem(KEY); localStorage.removeItem('wins-names'); location.reload();
       }
     }
 
-    // === Kiosk Lock (PIN) ===
+    /* Kiosk Lock (PIN) */
     let LOCKED = (localStorage.getItem('one-board-locked') === '1');
     let PIN = localStorage.getItem('one-board-pin') || '';
     function setLocked(flag){
-      LOCKED = flag;
-      localStorage.setItem('one-board-locked', flag ? '1' : '0');
+      LOCKED = flag; localStorage.setItem('one-board-locked', flag ? '1' : '0');
       const ctrls = document.querySelectorAll('input, textarea, button, select');
       ctrls.forEach(el=>{
         if(['lockBtn','printBtn','shareBtn','qrBtn','adminBtn'].includes(el.id)) return;
@@ -470,8 +461,7 @@
       if(!LOCKED){
         if(!PIN){
           PIN = prompt('Set a 4-digit PIN to lock/unlock:', '') || '';
-          if(!PIN) return;
-          localStorage.setItem('one-board-pin', PIN);
+          if(!PIN) return; localStorage.setItem('one-board-pin', PIN);
         }
         setLocked(true);
       }else{
@@ -480,43 +470,34 @@
       }
     }
 
-    // === Share Link ===
-    async function shareLink(){
-      const url = location.href;
-      if (navigator.share) {
-        try { await navigator.share({ title:'One-Board', url }); } catch(e){}
-      } else {
-        await navigator.clipboard.writeText(url);
-        alert('Link copied:\n' + url);
-      }
-    }
-
-    // === Wire up events ===
+    /* Wire up */
     ids.forEach(id => { const el=$(id); if(el) el.addEventListener('input', () => { save(); if(id.startsWith('win')) updateEquityMeter(); }); });
     $('proofBtn').addEventListener('click', stampProof);
     $('resetBtn').addEventListener('click', resetWeek);
     $('copyBtn').addEventListener('click', copyWeekly);
     $('printBtn').addEventListener('click', () => window.print());
-    $('shareBtn').addEventListener('click', shareLink);
+    $('shareBtn').addEventListener('click', async ()=>{
+      const url = location.href;
+      if (navigator.share) { try { await navigator.share({ title:'One-Board', url }); } catch(e){} }
+      else { await navigator.clipboard.writeText(url); alert('Link copied:\n' + url); }
+    });
     $('exportBtn').addEventListener('click', exportData);
     $('importBtn').addEventListener('click', importData);
     $('clearBtn').addEventListener('click', clearData);
     $('lockBtn').addEventListener('click', toggleLock);
 
-    // === Init ===
-    load();
-    updateEquityMeter();
-    setLocked(LOCKED);
+    /* Init */
+    load(); updateEquityMeter(); setLocked(LOCKED);
   })();
   </script>
 
-  <!-- Lightweight QR generator -->
+  <!-- QR lib -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
-  <!-- QR + Admin + Supabase integrations -->
+  <!-- QR + Admin + Cloud saves -->
   <script>
   (function(){
-    /* ========= QR ========= */
+    /* ===== QR ===== */
     const qrBtn = document.getElementById('qrBtn');
     const qrModal = document.getElementById('qrModal');
     const qrClose = document.getElementById('qrClose');
@@ -524,57 +505,29 @@
     const copyLinkBtn = document.getElementById('copyLinkBtn');
     const printPosterBtn = document.getElementById('printPosterBtn');
 
-    const qrUrl = window.location.origin + window.location.pathname; // stable kiosk URL
+    const qrUrl = window.location.origin + window.location.pathname;
     let qr;
-
-    function openQr() {
-      qrModal.style.display = 'flex';
-      qrBox.innerHTML = '';
-      qr = new QRCode(qrBox, { text: qrUrl, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.M });
-    }
-    function closeQr() { qrModal.style.display = 'none'; qrBox.innerHTML = ''; qr = null; }
-    function copyLink() {
-      navigator.clipboard.writeText(qrUrl)
-        .then(()=>alert('Link copied. You can paste into Slack/Teams or create a poster.'))
-        .catch(()=>alert('Copy failed. You can still scan the QR.'));
-    }
-    function printPoster() {
+    function openQr(){ qrModal.style.display='flex'; qrBox.innerHTML=''; qr = new QRCode(qrBox, { text: qrUrl, width:240, height:240, correctLevel: QRCode.CorrectLevel.M }); }
+    function closeQr(){ qrModal.style.display='none'; qrBox.innerHTML=''; qr=null; }
+    function copyLink(){ navigator.clipboard.writeText(qrUrl).then(()=>alert('Link copied.')).catch(()=>alert('Copy failed.')); }
+    function printPoster(){
       const win = window.open('', '_blank', 'width=420,height=600');
       const posterHtml = `
-        <html><head><title>One-Board QR Poster</title>
-        <meta name="robots" content="noindex,nofollow">
-        <style>
-          body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
-          .wrap { max-width: 5in; margin: 20px auto; text-align: center; }
-          .box { background:#fff; padding:16px; border:1px solid #ddd; border-radius:12px; display:inline-block; }
-          h1 { font-size:18px; margin-bottom:6px; }
-          p { font-size:12px; color:#444; margin-top:6px; }
-          @media print { .hint { display:none; } }
-        </style></head>
-        <body>
-          <div class="wrap">
-            <h1>Open One-Board on your phone</h1>
-            <div id="posterQr" class="box"></div>
-            <p>No PHI. Using a personal phone is optional — kiosk/shared tablet available.</p>
-            <p class="hint">Tip: test the QR with your camera before posting.</p>
-          </div>
-          <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"><\/script>
-          <script>
-            new QRCode(document.getElementById('posterQr'), { text:${JSON.stringify(qrUrl)}, width:240,height:240,
-              correctLevel: QRCode.CorrectLevel.M });
-            window.print();
-          <\/script>
-        </body></html>`;
+      <html><head><title>One-Board QR Poster</title><meta name="robots" content="noindex,nofollow">
+      <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}.wrap{max-width:5in;margin:20px auto;text-align:center}.box{background:#fff;padding:16px;border:1px solid #ddd;border-radius:12px;display:inline-block}h1{font-size:18px;margin-bottom:6px}p{font-size:12px;color:#444;margin-top:6px}@media print{.hint{display:none}}</style></head>
+      <body><div class="wrap"><h1>Open One-Board on your phone</h1><div id="posterQr" class="box"></div><p>No PHI. Using a personal phone is optional — kiosk/shared tablet available.</p><p class="hint">Test the QR with your camera before posting.</p></div>
+      <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"><\/script>
+      <script>new QRCode(document.getElementById('posterQr'),{text:${JSON.stringify(qrUrl)},width:240,height:240,correctLevel:QRCode.CorrectLevel.M});window.print();<\/script>
+      </body></html>`;
       win.document.write(posterHtml); win.document.close();
     }
-
     qrBtn?.addEventListener('click', openQr);
     qrClose?.addEventListener('click', closeQr);
     qrModal?.addEventListener('click', (e)=>{ if(e.target === qrModal) closeQr(); });
     copyLinkBtn?.addEventListener('click', copyLink);
     printPosterBtn?.addEventListener('click', printPoster);
 
-    /* ========= Admin Overlay (PIN + optional SSO) ========= */
+    /* ===== Admin (PIN + optional SSO) ===== */
     const adminBtn = document.getElementById('adminBtn');
     const adminModal = document.getElementById('adminModal');
     const adminClose = document.getElementById('adminClose');
@@ -586,7 +539,6 @@
     const adminSigninBtn = document.getElementById('adminSigninBtn');
     const adminSignoutBtn = document.getElementById('adminSignoutBtn');
 
-    // Data containers in admin UI
     const adminAnnouncements = document.getElementById('adminAnnouncements');
     const annTitle = document.getElementById('annTitle');
     const annUntil = document.getElementById('annUntil');
@@ -597,33 +549,24 @@
     const expPhase = document.getElementById('expPhase');
     const expAdd = document.getElementById('expAdd');
 
-    // Local storage lists for admin (could be synced to Supabase later)
     let ANN = JSON.parse(localStorage.getItem('oneboard-announcements') || '[]');
     let EXP = JSON.parse(localStorage.getItem('oneboard-experiments') || '[]');
 
-    function paintAnnouncements() {
-      adminAnnouncements.innerHTML = '';
-      ANN.forEach((a, i) => {
-        const row = document.createElement('div');
-        row.className = 'stack';
-        row.style.justifyContent = 'space-between';
-        row.innerHTML = `
-          <div>${a.title} <span class="muted">(${a.until||''})</span></div>
-          <div class="stack">
-            <button class="btn" data-i="${i}" data-act="edit">Edit</button>
-            <button class="btn" data-i="${i}" data-act="del">Delete</button>
-          </div>`;
+    function paintAnnouncements(){
+      adminAnnouncements.innerHTML='';
+      ANN.forEach((a,i)=>{
+        const row = document.createElement('div'); row.className='stack'; row.style.justifyContent='space-between';
+        row.innerHTML = `<div>${a.title} <span class="muted">(${a.until||''})</span></div>
+                         <div class="stack"><button class="btn" data-i="${i}" data-act="edit">Edit</button>
+                         <button class="btn" data-i="${i}" data-act="del">Delete</button></div>`;
         adminAnnouncements.appendChild(row);
       });
     }
-    function paintExperiments() {
-      adminExperiments.innerHTML = '';
-      EXP.forEach((e, i) => {
-        const row = document.createElement('div');
-        row.className = 'stack';
-        row.style.justifyContent = 'space-between';
-        row.innerHTML = `
-          <div>${e.title} <span class="pill">${e.phase}</span></div>
+    function paintExperiments(){
+      adminExperiments.innerHTML='';
+      EXP.forEach((e,i)=>{
+        const row = document.createElement('div'); row.className='stack'; row.style.justifyContent='space-between';
+        row.innerHTML = `<div>${e.title} <span class="pill">${e.phase}</span></div>
           <div class="stack">
             <select data-i="${i}" data-act="phase">
               <option ${e.phase==='Measure'?'selected':''}>Measure</option>
@@ -644,38 +587,32 @@
     }
 
     function openAdmin(){
-      adminModal.style.display = 'flex';
+      adminModal.style.display='flex';
       paintAnnouncements(); paintExperiments();
       adminAuthState.textContent = window.supabase ? 'Mode: PIN + SSO (Supabase available)' : 'Mode: PIN';
     }
-    function closeAdmin(){ adminModal.style.display = 'none'; }
+    function closeAdmin(){ adminModal.style.display='none'; }
 
     adminBtn?.addEventListener('click', openAdmin);
     adminClose?.addEventListener('click', closeAdmin);
     adminModal?.addEventListener('click', (e)=>{ if(e.target === adminModal) closeAdmin(); });
 
-    // PIN gate (demo PIN 1234)
     function unlockAdmin(){
-      if (adminPIN.value === '1234') {
-        adminGate.style.display = 'none';
-        adminContent.style.display = 'block';
-      } else { alert('Wrong PIN'); }
+      if(adminPIN.value==='1234'){ adminGate.style.display='none'; adminContent.style.display='block'; }
+      else alert('Wrong PIN');
     }
     adminUnlock?.addEventListener('click', unlockAdmin);
 
-    // Optional SSO (email magic link) if Supabase configured
     adminSigninBtn?.addEventListener('click', async ()=>{
       if (!window.supabase){ alert('SSO not configured. Using PIN mode.'); return; }
-      const email = prompt('Enter your work email for a magic link:');
-      if (!email) return;
+      const email = prompt('Enter your work email for a magic link:'); if(!email) return;
       const emailRedirectTo = window.location.origin + window.location.pathname;
       const { error } = await window.supabase.auth.signInWithOtp({ email, options: { emailRedirectTo } });
       if (error) alert(error.message); else alert('Check your email for the sign-in link.');
     });
     adminSignoutBtn?.addEventListener('click', async ()=>{
       if (!window.supabase) return;
-      await window.supabase.auth.signOut();
-      alert('Signed out.');
+      await window.supabase.auth.signOut(); alert('Signed out.');
     });
     (async function watchAuth(){
       if (!window.supabase) return;
@@ -688,20 +625,17 @@
       });
     })();
 
-    // Admin: add/edit/delete announcements
-    annAdd?.addEventListener('click', ()=> {
+    annAdd?.addEventListener('click', ()=>{
       if (!annTitle.value.trim()) return;
       ANN.push({ title: annTitle.value.trim(), until: annUntil.value.trim() });
       annTitle.value=''; annUntil.value='';
       saveAdminLocal(); paintAnnouncements();
-      // TODO: optionally sync to Supabase table `announcements`
     });
     adminAnnouncements?.addEventListener('click', (e)=>{
       const btn = e.target.closest('button'); if(!btn) return;
-      const i = +btn.dataset.i;
-      const act = btn.dataset.act;
-      if (act === 'del'){ ANN.splice(i,1); saveAdminLocal(); paintAnnouncements(); }
-      if (act === 'edit'){
+      const i = +btn.dataset.i; const act = btn.dataset.act;
+      if (act==='del'){ ANN.splice(i,1); saveAdminLocal(); paintAnnouncements(); }
+      if (act==='edit'){
         const t = prompt('Title', ANN[i].title) ?? ANN[i].title;
         const u = prompt('Until', ANN[i].until || '') ?? ANN[i].until;
         ANN[i] = { title: t.trim(), until: (u||'').trim() };
@@ -709,13 +643,11 @@
       }
     });
 
-    // Admin: add/edit/delete experiments
-    expAdd?.addEventListener('click', ()=> {
+    expAdd?.addEventListener('click', ()=>{
       if (!expTitle.value.trim()) return;
       EXP.push({ title: expTitle.value.trim(), phase: expPhase.value });
       expTitle.value=''; expPhase.value='Measure';
       saveAdminLocal(); paintExperiments();
-      // TODO: optionally sync to Supabase table `experiments`
     });
     adminExperiments?.addEventListener('change', (e)=>{
       const sel = e.target.closest('select'); if(!sel) return;
@@ -724,16 +656,13 @@
     });
     adminExperiments?.addEventListener('click', (e)=>{
       const btn = e.target.closest('button'); if(!btn) return;
-      const i = +btn.dataset.i; const act = btn.dataset.act;
-      if (act==='del'){ EXP.splice(i,1); saveAdminLocal(); paintExperiments(); }
+      const i = +btn.dataset.i; if(btn.dataset.act==='del'){ EXP.splice(i,1); saveAdminLocal(); paintExperiments(); }
     });
 
-    /* ========= Supabase saves (Proof + Snapshot) ========= */
-    // Helper to safely call Supabase if configured
+    /* ===== Cloud saves ===== */
     async function sbInsert(table, row){
       if (!window.supabase) return { error: new Error('Supabase not configured') };
       try {
-        // Attach created_by if user signed in
         const { data: sess } = await window.supabase.auth.getSession();
         const created_by = sess?.session?.user?.id || null;
         const payload = Object.assign({}, row, { created_by });
@@ -741,13 +670,10 @@
         return { data, error };
       } catch (e){ return { error: e }; }
     }
-
-    // Expose a hook the main script calls after stamping proof
-    window.oneboardCloudSaveProof = async ({ week_of, proof_stamp }) => {
+    window.oneboardCloudSaveProof = async ({ week_of, proof_stamp })=>{
       await sbInsert('proof_events', { week_of, proof_stamp, saved_at: new Date().toISOString() });
     };
 
-    // Admin: Save Weekly Snapshot button
     const snapshotBtn = document.getElementById('snapshotBtn');
     const snapshotStatus = document.getElementById('snapshotStatus');
     function getVal(id){ return (document.getElementById(id)?.value || '').trim(); }
@@ -769,13 +695,10 @@
         saved_at: new Date().toISOString()
       };
 
-      // Local fallback
       const LOCAL_KEY = 'oneboard-snapshots';
       const list = JSON.parse(localStorage.getItem(LOCAL_KEY) || '[]');
-      list.push(snapshot);
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(list));
+      list.push(snapshot); localStorage.setItem(LOCAL_KEY, JSON.stringify(list));
 
-      // Cloud attempt
       const { error } = await sbInsert('weekly_snapshots', snapshot);
       snapshotStatus.textContent = error ? 'Saved locally (cloud not configured).' : 'Saved to cloud.';
       setTimeout(()=> snapshotStatus.textContent = '', 3000);
@@ -783,14 +706,11 @@
   })();
   </script>
 
-  <!-- Supabase init (optional). Keep anon key public ONLY; never expose service_role on the client. -->
+  <!-- Supabase init (optional) -->
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
-
-    // Fill in when you're ready to connect:
     const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';   /* QUOTED placeholder */
     const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';                 /* QUOTED placeholder */
-
     if (!SUPABASE_URL.startsWith('https://YOUR-')) {
       window.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
