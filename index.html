@@ -330,6 +330,43 @@
   }, true); // capture = true so we win the race
 })();
 </script>
+<script>
+(function(){
+  function ensureBuild() {
+    if (typeof window.printWeeklySnapshot === 'function') {
+      window.printWeeklySnapshot();   // fills #printView, then calls window.print()
+    }
+  }
+
+  // 1) Always rebuild just before the browser prints (covers Ctrl/Cmd+P and system dialogs)
+  window.addEventListener('beforeprint', ensureBuild);
+
+  // 2) Extra safety: some browsers fire a media query change instead of (or in addition to) beforeprint
+  const mql = window.matchMedia && window.matchMedia('print');
+  if (mql) {
+    // Newer browsers
+    if (mql.addEventListener) {
+      mql.addEventListener('change', e => { if (e.matches) ensureBuild(); });
+    } else if (mql.addListener) {
+      // Older API
+      mql.addListener(e => { if (e.matches) ensureBuild(); });
+    }
+  }
+
+  // 3) If you still have the old print handler, hard-override it so our builder runs first
+  const btn = document.getElementById('printBtn');
+  if (btn) {
+    const clone = btn.cloneNode(true);
+    btn.parentNode.replaceChild(clone, btn);
+    clone.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      ensureBuild();
+    }, true);
+  }
+})();
+</script>
 <body>
   <div class="wrap">
     <header>
