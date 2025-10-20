@@ -301,7 +301,35 @@
   }
 })();
 </script>
-<!-- === /One-Page Print View ============================================ -->
+<!-- === /One-Page Print View ============================================
+ --><script>
+(function(){
+  // Build + print function from the print block we added
+  function buildAndPrint(){
+    if (typeof window.printWeeklySnapshot === 'function') {
+      window.printWeeklySnapshot(); // builds then prints (with small delay)
+    } else {
+      // Fallback: just print if builder missing
+      window.print();
+    }
+  }
+
+  const btn = document.getElementById('printBtn');
+  if (!btn) return;
+
+  // 1) Remove all prior click listeners by cloning the node
+  const clone = btn.cloneNode(true);
+  btn.parentNode.replaceChild(clone, btn);
+
+  // 2) Attach our handler in the **capture** phase and stop others just in case
+  clone.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    buildAndPrint();
+  }, true); // capture = true so we win the race
+})();
+</script>
 <body>
   <div class="wrap">
     <header>
