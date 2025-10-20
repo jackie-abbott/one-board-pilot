@@ -110,6 +110,198 @@
     }
   </style>
 </head>
+<!-- === One-Page Print View (drop-in) =================================== -->
+<style>
+  /* Hidden during normal use */
+  #printView { display:none; }
+
+  /* Print styles: hide the app, show formatted snapshot */
+  @media print{
+    body{ background:#fff !important; color:#000 !important; }
+    .wrap, #qrModal, #adminModal { display:none !important; }
+    #printView{ display:block !important; margin:0 auto; padding:24px; max-width:8.5in; }
+    #pvHdr{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    #pvTitle{ font:700 20px/1.1 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; margin:0 0 2px 0; }
+    #pvMeta{ color:#333; font:12px/1.3 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+    .pv-section{ margin-top:14px; }
+    .pv-h2{ font:600 13px/1.3 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; 
+            margin:0 0 6px 0; padding-bottom:4px; border-bottom:1px solid #e5e7eb; }
+    table.pv { width:100%; border-collapse:collapse; font:13px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+    table.pv th, table.pv td{ border:1px solid #e5e7eb; padding:6px 8px; vertical-align:top; }
+    table.pv th{ background:#f8fafc; font-weight:600; text-align:left; }
+    .pv-grid{ display:grid; grid-template-columns:2fr 1fr; gap:12px; }
+    .pv-badge{ display:inline-block; font:11px/1.2 system-ui; color:#065f5b; background:#ccfbf1; border:1px solid #99f6e4; 
+               border-radius:999px; padding:3px 8px; }
+    .pv-note{ font:12px/1.3 system-ui; color:#111; }
+    .pv-muted{ color:#555; }
+    /* QR at bottom-right */
+    #pvFooter{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
+    #pvQrWrap{ text-align:right; }
+    #pvQr{ display:inline-block; background:#fff; padding:6px; border:1px solid #e5e7eb; border-radius:8px; }
+  }
+</style>
+
+<!-- Print-only container (auto-filled before print) -->
+<div id="printView" aria-hidden="true">
+  <div id="pvHdr">
+    <div>
+      <h1 id="pvTitle">One-Board Weekly Snapshot</h1>
+      <div id="pvMeta"></div>
+    </div>
+    <div>
+      <span id="pvBadge" class="pv-badge">No PHI • Aggregate only</span>
+    </div>
+  </div>
+
+  <div class="pv-section">
+    <h2 class="pv-h2">Signals (3 lines max)</h2>
+    <table class="pv" id="pvSignals">
+      <thead><tr><th>Communication</th><th>Workload</th><th>Teamwork</th></tr></thead>
+      <tbody><tr><td colspan="3" class="pv-muted">Populated by script…</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="pv-section">
+    <h2 class="pv-h2">One Action for This Week</h2>
+    <div id="pvAction" class="pv-note"></div>
+  </div>
+
+  <div class="pv-section">
+    <div class="pv-grid">
+      <div>
+        <h2 class="pv-h2">Weekly Wins (Behavior → Impact)</h2>
+        <table class="pv" id="pvWins">
+          <thead><tr><th>@</th><th>Behavior</th><th>Impact</th></tr></thead>
+          <tbody><tr><td colspan="3" class="pv-muted">Populated by script…</td></tr></tbody>
+        </table>
+        <div id="pvEquity" class="pv-note" style="margin-top:6px;"></div>
+      </div>
+      <div>
+        <h2 class="pv-h2">Snapshot Notes</h2>
+        <div id="pvNotes" class="pv-note"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pvFooter">
+    <div class="pv-note pv-muted">If you see something, write something (no PHI). Share only aggregates; never subgroups with N&lt;5.</div>
+    <div id="pvQrWrap">
+      <div id="pvQr"></div>
+      <div class="pv-note pv-muted">Open online</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Helper: read and tidy a value
+  const v = id => (document.getElementById(id)?.value || '').trim();
+
+  // Helper: nice date like "Oct 20 2025"
+  function fmtDateISO(iso){
+    if (!iso) return '(set week)';
+    try{
+      const d = new Date(iso+'T00:00:00');
+      return d.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' });
+    }catch(_){ return iso; }
+  }
+
+  // Build the print view from current fields
+  function buildPrintView(){
+    const dept = ''; // optional: hard-code your department name here if desired
+    const week = v('weekOf');
+    const weekNice = fmtDateISO(week);
+    const scribe = (document.getElementById('scribe')?.value || '').trim();
+    const owner = v('owner');
+    const proof = (document.getElementById('proofStamp')?.textContent || '').replace(/^Proof:\s*/,'').trim();
+
+    // Header meta
+    const meta = [];
+    if (dept) meta.push(`<b>Department:</b> ${dept}`);
+    meta.push(`<b>Week of:</b> ${weekNice}`);
+    if (scribe) meta.push(`<b>Scribe:</b> ${scribe}`);
+    if (owner) meta.push(`<b>Owner:</b> ${owner}`);
+    if (proof) meta.push(`<b>Proof Done:</b> ${proof}`);
+    document.getElementById('pvMeta').innerHTML = meta.join(' &nbsp; • &nbsp; ');
+
+    // Signals table
+    const s1 = v('signal1') || '—';
+    const s2 = v('signal2') || '—';
+    const s3 = v('signal3') || '—';
+    document.querySelector('#pvSignals tbody').innerHTML =
+      `<tr><td>${escapeHtml(s1)}</td><td>${escapeHtml(s2)}</td><td>${escapeHtml(s3)}</td></tr>`;
+
+    // One Action block
+    const act = v('oneAction');
+    const start = v('start');
+    const actionParts = [];
+    if (act) actionParts.push(`<b>Test:</b> ${escapeHtml(act)}`);
+    if (start) actionParts.push(`<b>Starts:</b> ${fmtDateISO(start)}`);
+    if (owner) actionParts.push(`<b>Owner:</b> ${escapeHtml(owner)}`);
+    const actionHtml = actionParts.length ? actionParts.join(' &nbsp; • &nbsp; ') :
+      '<span class="pv-muted">Add a one-week, observable experiment.</span>';
+    document.getElementById('pvAction').innerHTML = actionHtml;
+
+    // Wins table (split to Behavior/Impact if " → " present)
+    const wins = [v('win1'), v('win2'), v('win3'), v('win4'), v('win5')].filter(Boolean);
+    const rows = wins.map(line=>{
+      // Extract @name (first token starting with @)
+      const m = line.match(/@(\S+)/);
+      const who = m ? '@' + m[1].replace(/[.,;:]$/,'') : '—';
+      // Split on arrow, fallback whole in Behavior
+      const parts = line.split(/→|->|=>/);
+      const behavior = escapeHtml(parts[0].replace(/@\S+\s*—?\s*/,'').trim());
+      const impact = escapeHtml((parts[1]||'').trim() || '—');
+      return `<tr><td>${who}</td><td>${behavior||'—'}</td><td>${impact}</td></tr>`;
+    });
+    document.querySelector('#pvWins tbody').innerHTML =
+      rows.length ? rows.join('') : `<tr><td colspan="3" class="pv-muted">Add 3–5 wins (behavior → impact).</td></tr>`;
+
+    // Equity (unique @names)
+    const names = wins.map(w => (w.match(/@(\S+)/)||[])[1]).filter(Boolean);
+    const uniq = new Set(names).size;
+    document.getElementById('pvEquity').textContent =
+      wins.length ? `Recognition equity: ${uniq} unique contributor(s) this week` : '';
+
+    // Notes (Top +1 / −1 + free text)
+    const tPlus = v('topPlus');
+    const tMinus = v('topMinus');
+    const notes = v('notes');
+    const notesLines = [];
+    if (tPlus) notesLines.push(`<b>Top +1:</b> ${escapeHtml(tPlus)}`);
+    if (tMinus) notesLines.push(`<b>Top −1:</b> ${escapeHtml(tMinus)}`);
+    if (notes) notesLines.push(escapeHtml(notes));
+    document.getElementById('pvNotes').innerHTML =
+      notesLines.length ? notesLines.join('<br>') : '<span class="pv-muted">No notes.</span>';
+
+    // QR for “open online” (uses qrcodejs already loaded in your page)
+    try{
+      const pvQr = document.getElementById('pvQr'); pvQr.innerHTML = '';
+      const url = window.location.origin + window.location.pathname;
+      new QRCode(pvQr, { text: url, width: 96, height: 96, correctLevel: QRCode.CorrectLevel.M });
+    }catch(_){}
+  }
+
+  // Simple HTML escaper
+  function escapeHtml(s){
+    return s.replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+
+  // Hook the existing Print button to use the formatted view
+  window.printWeeklySnapshot = function(){
+    buildPrintView();
+    // Small delay to ensure QR canvas renders before print
+    setTimeout(()=>window.print(), 50);
+  };
+
+  // Override the old handler if it exists
+  const printBtn = document.getElementById('printBtn');
+  if (printBtn){
+    printBtn.onclick = window.printWeeklySnapshot;
+  }
+})();
+</script>
+<!-- === /One-Page Print View ============================================ -->
 <body>
   <div class="wrap">
     <header>
